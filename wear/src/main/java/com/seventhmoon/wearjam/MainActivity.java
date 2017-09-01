@@ -68,7 +68,7 @@ public class MainActivity extends WearableActivity {
 
         songAdapter = new MyAdapter(context, R.layout.music_list_item, myList);
         wearableRecyclerView.setAdapter(songAdapter);
-        
+
 
         wearableRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
