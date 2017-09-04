@@ -4,7 +4,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
+
+import android.support.wearable.view.CurvedChildLayoutManager;
 import android.support.wearable.view.WearableRecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -65,29 +68,38 @@ public class MainActivity extends WearableActivity {
         Song song4 = new Song();
         song4.setName("test4");
         myList.add(song4);
+        Song song5 = new Song();
+        song5.setName("test5");
+        myList.add(song5);
+        Song song6 = new Song();
+        song6.setName("test6");
+        myList.add(song6);
+        Song song7 = new Song();
+        song7.setName("test7");
+        myList.add(song7);
+        Song song8 = new Song();
+        song8.setName("test8");
+        myList.add(song8);
 
         songAdapter = new MyAdapter(context, R.layout.music_list_item, myList);
         wearableRecyclerView.setAdapter(songAdapter);
+
+        wearableRecyclerView.setLayoutManager(new CurvedChildLayoutManager(this));
+        wearableRecyclerView.setCenterEdgeItems(true);
+
 
 
         wearableRecyclerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //deselect other
-                /*for (int i=0; i<myList.size(); i++) {
+                Log.e(TAG, "OnClick");
 
-                    if (i == position) {
-                        myList.get(i).setSelected(true);
 
-                    } else {
-                        myList.get(i).setSelected(false);
-
-                    }
-                }
-
-                listView.invalidateViews();*/
             }
         });
+
+
 
         /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

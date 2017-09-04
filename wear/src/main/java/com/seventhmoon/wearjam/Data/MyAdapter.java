@@ -1,10 +1,12 @@
 package com.seventhmoon.wearjam.Data;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.seventhmoon.wearjam.PlayActivity;
 import com.seventhmoon.wearjam.R;
 
 import java.util.ArrayList;
@@ -25,15 +28,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private int layoutResourceId;
 
-    private ArrayList<Song> items = new ArrayList<>();
+    private static ArrayList<Song> items = new ArrayList<>();
 
-    private Context context;
+    private static Context context;
 
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
         LinearLayout layoutItem;
         ImageView songicon;
@@ -45,6 +48,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             this.layoutItem = v.findViewById(R.id.layoutItem);
             this.songicon = v.findViewById(R.id.songIcon);
             this.songname = v.findViewById(R.id.songName);
+            layoutItem.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            // here you use position
+            int position = getAdapterPosition();
+            Log.e(TAG, "onClick "+position);
+            Intent intent = new Intent(context, PlayActivity.class);
+            intent.putExtra("TITLE", items.get(position).getName());
+            context.startActivity(intent);
         }
     }
 
