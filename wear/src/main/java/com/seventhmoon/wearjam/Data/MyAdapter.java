@@ -93,7 +93,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         //holder.mTextView.setText(mDataset[position]);
         Song songItem = items.get(position);
         if (songItem != null) {
-            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_audiotrack_black_48dp);
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_audiotrack_white_48dp);
             holder.songicon.setImageBitmap(bitmap);
             holder.songname.setText(songItem.getName());
 

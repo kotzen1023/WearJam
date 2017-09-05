@@ -6,7 +6,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.seventhmoon.wearjam.MainActivity"
+    tools:context="com.seventhmoon.wearjam.FileChooseActivity"
     tools:deviceIds="wear"
     android:scrollbars="vertical">
 
@@ -15,10 +15,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
-
         <android.support.wearable.view.WearableRecyclerView
-            android:id="@+id/listView"
+            android:id="@+id/fileChooseListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
@@ -33,17 +31,26 @@
             android:padding="1dp">
 
             <android.support.wearable.view.CircledImageView
-                android:id="@+id/btn_add"
+                android:id="@+id/btnFileChooseListConfirm"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/ic_add_black_48dp"
+                android:src="@drawable/ic_done_black_48dp"
                 app:circle_color="#0EB695"
                 app:circle_radius="20dp"
                 app:circle_radius_pressed="20dp" />
         </FrameLayout>
-    </LinearLayout>
 
+        <!--Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:text="Add"
+
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/btnFileChooseListConfirm"
+            android:visibility="visible"/-->
+    </LinearLayout>
 
 
 

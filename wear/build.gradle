@@ -19,8 +19,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.google.android.support:wearable:2.0.4'
     compile 'com.google.android.gms:play-services-wearable:11.0.4'
-    provided 'com.google.android.wearable:wearable:1.0.0'
+    provided 'com.google.android.wearable:wearable:2.0.4'
+    compile 'com.yahoo.mobile.client.android.util.rangeseekbar:rangeseekbar-library:0.1.0'
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
 }
