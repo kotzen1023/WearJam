@@ -1,5 +1,6 @@
 package com.seventhmoon.wearjam.Service;
 
+
 import android.net.Uri;
 import android.util.Log;
 
@@ -19,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.seventhmoon.wearjam.MainActivity.mGoogleApiClient;
 
-
 public class DataLayerListenerService extends WearableListenerService {
     private static final String TAG = DataLayerListenerService.class.getName();
 
@@ -33,7 +33,7 @@ public class DataLayerListenerService extends WearableListenerService {
             final Uri uri = event.getDataItem().getUri();
             final String path = uri!=null ? uri.getPath() : null;
             Log.d(TAG, "path = "+path);
-            if("/MOBILE_COMMAND".equals(path)) {
+            if("/WEAR_COMMAND".equals(path)) {
                 final DataMap map = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                 // read your values from map:
                 //int color = map.getInt("color");
@@ -45,15 +45,14 @@ public class DataLayerListenerService extends WearableListenerService {
                 Log.d(TAG, "/MUSIC");
 
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-                Asset profileAsset = dataMapItem.getDataMap().getAsset("profileMusic");
+                Asset profileAsset = dataMapItem.getDataMap().getAsset("profileVoice");
+                InputStream inputStream = loadMusicFromAsset(profileAsset);
                 String filename = dataMapItem.getDataMap().getString("filename");
-                //Long size = dataMapItem.getDataMap().getLong("datasize");
+                Long size = dataMapItem.getDataMap().getLong("datasize");
                 Long count = dataMapItem.getDataMap().getLong("count");
-                //InputStream inputStream = loadSoundFromAsset(profileAsset);
-                saveMusicFromAsset(profileAsset, filename);
 
 
-                Log.d(TAG, "receive asset ! file name = "+filename+" count = "+count);
+                Log.d(TAG, "receive asset ! file name = "+filename+" size = "+size+" count = "+count);
 
 
 
@@ -65,7 +64,7 @@ public class DataLayerListenerService extends WearableListenerService {
         }
     }
 
-    public InputStream loadSoundFromAsset(Asset asset) {
+    public InputStream loadMusicFromAsset(Asset asset) {
 
 
         if (asset == null) {
@@ -87,27 +86,5 @@ public class DataLayerListenerService extends WearableListenerService {
 
         // decode the stream into a bitmap
         return assetInputStream;
-    }
-
-    public void saveMusicFromAsset(Asset asset, String filename) {
-        if (asset == null) {
-            throw new IllegalArgumentException("Asset must be non-null");
-        }
-        ConnectionResult result = mGoogleApiClient.blockingConnect(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        if (!result.isSuccess()) {
-            //return null;
-        } else {
-            // convert asset into a file descriptor and block until it's ready
-            InputStream assetInputStream = Wearable.DataApi.getFdForAsset(mGoogleApiClient, asset).await().getInputStream();
-            mGoogleApiClient.disconnect();
-
-            if (assetInputStream == null) {
-                Log.e(TAG, "Requested an unknown Asset.");
-
-            } else {
-
-            }
-        }
-
     }
 }

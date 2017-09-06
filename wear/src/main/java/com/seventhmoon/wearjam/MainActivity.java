@@ -23,7 +23,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Wearable;
 import com.seventhmoon.wearjam.Data.Constants;
 import com.seventhmoon.wearjam.Data.MyAdapter;
 import com.seventhmoon.wearjam.Data.Song;
@@ -89,7 +91,7 @@ public class MainActivity extends WearableActivity {
 
         if (permission_result) {
             // carry on the normal flow, as the case of  permissions  granted.
-
+            initGoogleApi();
             init_wearjam_folder();
             init();
 
@@ -383,6 +385,28 @@ public class MainActivity extends WearableActivity {
         }
     }
 
+    private void initGoogleApi() {
+        Log.d(TAG, "initGoogleApi");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle connectionHint) {
+                        Log.e(TAG, "mGoogleApiClient is connected.");
+                    }
+                    @Override
+                    public void onConnectionSuspended(int cause) {
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult result) {
+                    }
+                })
+                .addApi(Wearable.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
@@ -396,12 +420,19 @@ public class MainActivity extends WearableActivity {
     protected void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
-        //mGoogleApiClient.connect();
+        if (mGoogleApiClient != null && !mGoogleApiClient.isConnected())
+            mGoogleApiClient.connect();
     }
 
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
+
+        if (mGoogleApiClient != null) {
+
+            if (mGoogleApiClient.isConnected())
+                mGoogleApiClient.disconnect();
+        }
 
         if (isRegister && mReceiver != null) {
             try {
@@ -527,7 +558,7 @@ public class MainActivity extends WearableActivity {
                         Log.d(TAG, "write permission granted");
                         // process the normal flow
                         //else any one or both the permissions are not granted
-
+                        initGoogleApi();
                         init_wearjam_folder();
                         init();
 

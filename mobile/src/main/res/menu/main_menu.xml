@@ -1,0 +1,101 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:title="Search"
+        app:showAsAction="ifRoom|collapseActionView|withText"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@drawable/ic_search_white_24dp">
+    </item>
+
+    <item
+        android:id="@+id/action_add"
+        android:title="@string/menu_add"
+        android:icon="@drawable/ic_add_white_24dp"
+        app:showAsAction="ifRoom|withText" />
+
+    <!--item
+        android:id="@+id/action_selectall"
+        android:title="@string/honey_key_all"
+        android:icon="@drawable/ic_select_all_white_24dp"
+        app:showAsAction="ifRoom|withText" /-->
+    <!--item
+        android:id="@+id/action_decrypt"
+        android:title="@string/honey_key_decrypt"
+        android:icon="@drawable/ic_lock_open_white_24dp"
+        app:showAsAction="ifRoom|withText" /-->
+
+    <item
+        android:id="@+id/action_settings"
+        android:title=""
+        android:icon="@drawable/ic_more_vert_white_24dp"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/action_play_all"
+                android:title="@string/play_mode_all"
+                android:icon="@drawable/ic_all_inclusive_black_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_shuffle"
+                android:title="@string/play_mode_shuffle"
+                android:icon="@drawable/ic_shuffle_black_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_repeat"
+                android:title="@string/play_mode_repeat"
+                android:icon="@drawable/ic_repeat_black_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_loop"
+                android:title="@string/play_mode_ab_loop"
+                android:icon="@drawable/ic_loop_black_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_volume"
+                android:title="@string/volume_control"
+                android:icon="@drawable/ic_volume_up_black_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_remove"
+                android:title="@string/remove_select"
+                android:icon="@drawable/ic_remove_black_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_clear"
+                android:title="@string/clear_all"
+                android:icon="@drawable/ic_clear_all_black_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_upload_to_watch"
+                android:title="@string/upload_to_watch"
+                android:icon="@drawable/ic_watch_black_48dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <!--item
+                android:id="@+id/action_delete"
+                android:title="@string/honey_key_delete"
+                android:icon="@drawable/ic_delete_white_24dp"
+                app:showAsAction="ifRoom|withText" />
+
+            <item
+                android:id="@+id/action_help"
+                android:title="@string/honey_key_help"
+                android:icon="@drawable/ic_help_outline_white_24dp"
+                app:showAsAction="ifRoom|withText" /-->
+        </menu>
+    </item>
+
+
+
+
+</menu>
