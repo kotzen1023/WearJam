@@ -35,22 +35,24 @@ public class FileChooseAdapter extends RecyclerView.Adapter<FileChooseAdapter.Vi
     private static final String TAG = FileChooseAdapter.class.getName();
     //private String[] mDataset;
 
-    public static SparseBooleanArray mSparseBooleanArray;
+    public SparseBooleanArray mSparseBooleanArray;
+
+    //public ArrayList<Boolean> checkBoxList;
 
     private LayoutInflater inflater = null;
 
     private int layoutResourceId;
 
-    private static ArrayList<FileChooseItem> items = new ArrayList<>();
+    private ArrayList<FileChooseItem> items = new ArrayList<>();
 
-    private static Context context;
+    private Context context;
     private int count = 0;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     //public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // each data item is just a string in this case
         ImageView fileicon;
         TextView filename;
@@ -107,6 +109,7 @@ public class FileChooseAdapter extends RecyclerView.Adapter<FileChooseAdapter.Vi
                 } else {
                     //onFileClick(o);
                     Log.d(TAG, "click " + o.getName());
+                    filename.setSingleLine(true);
                 }
             }
         }
@@ -147,7 +150,10 @@ public class FileChooseAdapter extends RecyclerView.Adapter<FileChooseAdapter.Vi
         this.items = objects;
         this.context = context;
         mSparseBooleanArray = new SparseBooleanArray();
-
+        for (int i=0; i <items.size(); i++) {
+            mSparseBooleanArray.put(i, false);
+        }
+        //checkBoxList = new ArrayList<>();
         //inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -198,15 +204,19 @@ public class FileChooseAdapter extends RecyclerView.Adapter<FileChooseAdapter.Vi
 
                 if (file.isDirectory()) {
                     if (fileItem.getName().equals("..")) {
+                        Log.e(TAG, "position = "+position);
                         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.up);
                         holder.checkbox.setVisibility(View.INVISIBLE);
                     } else {
                         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.folder);
+                        holder.checkbox.setVisibility(View.VISIBLE);
                     }
                 } else if (file.isFile()) {
                     bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.file);
+                    holder.checkbox.setVisibility(View.VISIBLE);
                 } else {
                     bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.folder);
+                    holder.checkbox.setVisibility(View.VISIBLE);
                 }
                 bm = Bitmap.createScaledBitmap(bitmap, 50, 50, true);
                 //ImageView imageCity = (ImageView) view.findViewById(R.id.fd_Icon1);
@@ -242,7 +252,9 @@ public class FileChooseAdapter extends RecyclerView.Adapter<FileChooseAdapter.Vi
             //if(isChecked == true) {
             FileChooseItem fileChooseItem = items.get((Integer) buttonView.getTag());
 
-            if (fileChooseItem.getCheckBox() != null) {
+            Log.d(TAG, "fileChooseItem.getName() = "+fileChooseItem.getName());
+
+            /*if (fileChooseItem.getCheckBox() != null) {
 
                 if (!fileChooseItem.getName().equals("..")) {
                     mSparseBooleanArray.put((Integer) buttonView.getTag(), isChecked);
@@ -257,6 +269,19 @@ public class FileChooseAdapter extends RecyclerView.Adapter<FileChooseAdapter.Vi
                     mSparseBooleanArray.put((Integer) buttonView.getTag(), false);
                     count--;
                 }
+            }*/
+            if (!fileChooseItem.getName().equals("..")) {
+                mSparseBooleanArray.put((Integer) buttonView.getTag(), isChecked);
+                if (isChecked)
+                    count++;
+                else
+                    count--;
+            }
+            else {
+                fileChooseItem.getCheckBox().setChecked(false);
+                fileChooseItem.getCheckBox().setVisibility(View.INVISIBLE);
+                mSparseBooleanArray.put((Integer) buttonView.getTag(), false);
+                count--;
             }
             //}
             /*int count = 0;

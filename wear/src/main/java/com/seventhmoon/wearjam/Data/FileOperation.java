@@ -5,9 +5,12 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 
 public class FileOperation {
@@ -134,5 +137,78 @@ public class FileOperation {
 
 
         return message;
+    }
+
+    public static int copyInputStreamToFile(InputStream in, String fileName) {
+        OutputStream out = null;
+        int ret = -1;
+        boolean exist;
+
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            //path = Environment.getExternalStorageDirectory();
+            RootDirectory = Environment.getExternalStorageDirectory();
+        }
+
+        File folder_wear = new File(RootDirectory.getAbsolutePath() + "/Music/WearJam/");
+
+        //check dir if exist
+        if(!folder_wear.exists()) {
+            Log.i(TAG, "folder not exist");
+            exist = folder_wear.mkdirs();
+            if (!exist)
+                Log.e(TAG, "folder_wear: failed to mkdir ");
+            try {
+                exist = folder_wear.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!exist)
+                Log.e(TAG, "folder_wear: failed to create hidden file");
+        }
+
+        while(true) {
+            if(folder_wear.exists())
+                break;
+        }
+
+
+        File file = new File(RootDirectory.getAbsolutePath() + "/Music/WearJam/"+fileName);
+
+
+
+
+
+
+        try {
+            out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            // Ensure that the InputStreams are closed even if there's an exception.
+            try {
+                if ( out != null ) {
+                    out.close();
+                }
+                // If you want to close the "in" InputStream yourself then remove this
+                // from here but ensure that you close it yourself eventually.
+                in.close();
+
+                Log.e(TAG, "save file size = "+file.length());
+
+                ret = 0;
+            }
+            catch ( IOException e ) {
+                e.printStackTrace();
+            }
+        }
+
+        return ret;
     }
 }

@@ -467,6 +467,14 @@ public class MainActivity extends AppCompatActivity {
                 } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.SAVE_SONGLIST_TO_FILE_COMPLETE)) {
                     if (loadDialog != null)
                         loadDialog.dismiss();
+                } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.GET_UPLOAD_SONG_COMPLETE)) {
+                    Log.d(TAG, "receive GET_UPLOAD_SONG_COMPLETE !");
+                    //get a upload complete command, try to send next
+                    if (uploadList.size() > 0) {
+                        Intent uploadIntent = new Intent(MainActivity.this, UploadToWatchService.class);
+                        uploadIntent.setAction(Constants.ACTION.UPLOAD_SONGS_TO_WATCH_ACTION);
+                        startService(uploadIntent);
+                    }
                 }
             }
         };
@@ -480,6 +488,7 @@ public class MainActivity extends AppCompatActivity {
             filter.addAction(Constants.ACTION.SAVE_SONGLIST_TO_FILE_COMPLETE);
             filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PLAYED);
             filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PAUSED);
+            filter.addAction(Constants.ACTION.GET_UPLOAD_SONG_COMPLETE);
             context.registerReceiver(mReceiver, filter);
             isRegister = true;
             Log.d(TAG, "registerReceiver mReceiver");

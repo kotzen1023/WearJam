@@ -60,6 +60,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             intent.putExtra("TITLE", items.get(position).getName());
             context.startActivity(intent);
         }
+
+
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)

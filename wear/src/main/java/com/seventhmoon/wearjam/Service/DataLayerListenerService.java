@@ -1,5 +1,6 @@
 package com.seventhmoon.wearjam.Service;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -10,13 +11,16 @@ import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.seventhmoon.wearjam.Data.Constants;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.seventhmoon.wearjam.Data.FileOperation.copyInputStreamToFile;
 import static com.seventhmoon.wearjam.MainActivity.mGoogleApiClient;
 
 
@@ -24,6 +28,7 @@ public class DataLayerListenerService extends WearableListenerService {
     private static final String TAG = DataLayerListenerService.class.getName();
 
     int TIMEOUT_MS = 10000;
+
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
         super.onDataChanged(dataEvents);
@@ -41,21 +46,24 @@ public class DataLayerListenerService extends WearableListenerService {
                 Long count = map.getLong("count");
                 Log.e(TAG, "command = "+command+" count = "+count);
             }
-            else if("/MUSIC".equals(path)) {
-                Log.d(TAG, "/MUSIC");
+            else if("/MOBILE_MUSIC".equals(path)) {
+                Log.d(TAG, "/MOBILE_MUSIC");
 
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
                 Asset profileAsset = dataMapItem.getDataMap().getAsset("profileMusic");
                 String filename = dataMapItem.getDataMap().getString("filename");
-                //Long size = dataMapItem.getDataMap().getLong("datasize");
+                Long size = dataMapItem.getDataMap().getLong("filesize");
                 Long count = dataMapItem.getDataMap().getLong("count");
                 //InputStream inputStream = loadSoundFromAsset(profileAsset);
                 saveMusicFromAsset(profileAsset, filename);
 
 
-                Log.d(TAG, "receive asset ! file name = "+filename+" count = "+count);
+                Log.d(TAG, "receive asset ! file name = "+filename+" size = "+size);
 
+                //sendReceiveComplete();
 
+                Intent intent = new Intent(Constants.ACTION.RECEIVE_UPLOAD_COMPLETE);
+                sendBroadcast(intent);
 
 
                 /*Intent sendIntent = new Intent();
@@ -65,31 +73,10 @@ public class DataLayerListenerService extends WearableListenerService {
         }
     }
 
-    public InputStream loadSoundFromAsset(Asset asset) {
 
-
-        if (asset == null) {
-            throw new IllegalArgumentException("Asset must be non-null");
-        }
-        ConnectionResult result =
-                mGoogleApiClient.blockingConnect(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        if (!result.isSuccess()) {
-            return null;
-        }
-        // convert asset into a file descriptor and block until it's ready
-        InputStream assetInputStream = Wearable.DataApi.getFdForAsset(mGoogleApiClient, asset).await().getInputStream();
-        mGoogleApiClient.disconnect();
-
-        if (assetInputStream == null) {
-            Log.w(TAG, "Requested an unknown Asset.");
-            return null;
-        }
-
-        // decode the stream into a bitmap
-        return assetInputStream;
-    }
 
     public void saveMusicFromAsset(Asset asset, String filename) {
+        int ret;
         if (asset == null) {
             throw new IllegalArgumentException("Asset must be non-null");
         }
@@ -99,15 +86,21 @@ public class DataLayerListenerService extends WearableListenerService {
         } else {
             // convert asset into a file descriptor and block until it's ready
             InputStream assetInputStream = Wearable.DataApi.getFdForAsset(mGoogleApiClient, asset).await().getInputStream();
-            mGoogleApiClient.disconnect();
 
             if (assetInputStream == null) {
                 Log.e(TAG, "Requested an unknown Asset.");
 
             } else {
-
+                ret = copyInputStreamToFile(assetInputStream, filename);
+                Log.e(TAG, "ret = "+ret);
             }
+
+
+
+
         }
 
     }
+
+
 }

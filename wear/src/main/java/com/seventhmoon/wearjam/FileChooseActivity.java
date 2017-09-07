@@ -72,11 +72,15 @@ public class FileChooseActivity extends WearableActivity {
             public void onClick(View v) {
                 searchList.clear();
 
-                Log.e(TAG, "size = "+fileChooseAdapter.getItemCount());
+                Log.e(TAG, "size = "+fileChooseAdapter.getItemCount()+"fileChooseAdapter.mSparseBooleanArray.size() = "+fileChooseAdapter.mSparseBooleanArray.size());
 
+                for (int j=0; j<fileChooseAdapter.mSparseBooleanArray.size(); j++) {
+                    Log.e(TAG, "mSparseBooleanArray["+j+"] = "+fileChooseAdapter.mSparseBooleanArray.get(j));
+                }
 
                 for (int i = 0; i < fileChooseAdapter.getItemCount(); i++) {
                     if (fileChooseAdapter.mSparseBooleanArray.get(i)) {
+                        Log.e(TAG, ""+i+" is checked");
                         FileChooseItem fileChooseItem = fileChooseAdapter.getItem(i);
 
                         if (fileChooseItem != null) {
@@ -215,6 +219,7 @@ public class FileChooseActivity extends WearableActivity {
         }
         fileChooseAdapter = new FileChooseAdapter(context,R.layout.file_choose_in_row,dir);
         wearableRecyclerView.setAdapter(fileChooseAdapter);
+
         //wearableRecyclerView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 
 

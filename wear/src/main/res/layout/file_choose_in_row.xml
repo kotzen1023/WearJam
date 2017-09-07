@@ -27,10 +27,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:maxLines="1"
             android:text="test"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold">
+            android:textStyle="bold"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:singleLine="true"
+            android:focusableInTouchMode="true"
+            android:focusable="true">
 
         </TextView>
 

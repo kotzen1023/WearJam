@@ -1,6 +1,7 @@
 package com.seventhmoon.wearjam.Service;
 
 
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -13,6 +14,7 @@ import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
+import com.seventhmoon.wearjam.Data.Constants;
 
 import java.io.InputStream;
 import java.util.List;
@@ -40,9 +42,14 @@ public class DataLayerListenerService extends WearableListenerService {
                 String command = map.getString("cmd");
                 Long count = map.getLong("count");
                 Log.e(TAG, "command = "+command+" count = "+count);
+
+                if (command.equals("UploadComplete")) {
+                    Intent intent = new Intent(Constants.ACTION.GET_UPLOAD_SONG_COMPLETE);
+                    sendBroadcast(intent);
+                }
             }
-            else if("/MUSIC".equals(path)) {
-                Log.d(TAG, "/MUSIC");
+            else if("/WEAR_MUSIC".equals(path)) {
+                Log.d(TAG, "/WEAR_MUSIC");
 
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
                 Asset profileAsset = dataMapItem.getDataMap().getAsset("profileVoice");

@@ -54,16 +54,20 @@ public class UploadToWatchService extends IntentService {
             Log.i(TAG, "UPLOAD_SONGS_TO_WATCH_ACTION");
         }
 
-        for (int i=0; i <uploadList.size(); i++) {
-            File file = new File(uploadList.get(i));
+        //for (int i=0; i <uploadList.size(); i++) {
+
+        if (uploadList.size() > 0) {
+            Log.d(TAG, "Upload "+uploadList.get(0));
+            File file = new File(uploadList.get(0));
             //Log.d(TAG, "uri = "+Uri.fromFile(file));
 
             Asset asset = Asset.createFromUri(Uri.fromFile(file));
 
-            PutDataMapRequest dataMap = PutDataMapRequest.create("/MUSIC");
+            PutDataMapRequest dataMap = PutDataMapRequest.create("/MOBILE_MUSIC");
             DataMap map = dataMap.getDataMap();
             map.putLong("count", count_for_upload);
             map.putString("filename", file.getName());
+            map.putLong("filesize", file.length());
 
             dataMap.getDataMap().putAsset("profileMusic", asset);
             PutDataRequest request = dataMap.asPutDataRequest();
@@ -72,7 +76,12 @@ public class UploadToWatchService extends IntentService {
 
             count_for_upload++;
             Log.e(TAG, "pendingResult = "+pendingResult);
+            //remove first
+            uploadList.remove(0);
         }
+
+
+        //}
 
         //Asset asset = Asset.createFromUri(Uri.fromFile())
 }
@@ -81,7 +90,7 @@ public class UploadToWatchService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy()");
-        Intent intent = new Intent(Constants.ACTION.GET_SONGLIST_FROM_RECORD_FILE_COMPLETE);
-        sendBroadcast(intent);
+        //Intent intent = new Intent(Constants.ACTION.GET_SONGLIST_FROM_RECORD_FILE_COMPLETE);
+        //sendBroadcast(intent);
     }
 }

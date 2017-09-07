@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.seventhmoon.wearjam.Data.Constants;
 import com.seventhmoon.wearjam.Data.MyAdapter;
@@ -58,7 +60,7 @@ public class MainActivity extends WearableActivity {
     //private TextView mClockView;
     private Context context;
 
-    ArrayList<Song> myList = new ArrayList<>();
+    //ArrayList<Song> myList = new ArrayList<>();
 
     WearableRecyclerView wearableRecyclerView;
     MyAdapter songAdapter;
@@ -75,6 +77,7 @@ public class MainActivity extends WearableActivity {
     private static BroadcastReceiver mReceiver = null;
     private static boolean isRegister = false;
     public static ProgressDialog loadDialog = null;
+    private static long receive_count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +114,8 @@ public class MainActivity extends WearableActivity {
             }
         });
 
+
+
         IntentFilter filter;
 
         mReceiver = new BroadcastReceiver() {
@@ -120,7 +125,7 @@ public class MainActivity extends WearableActivity {
 
                     if (songList.size() > 0) {
 
-                        songAdapter = new MyAdapter(context, R.layout.music_list_item, myList);
+                        songAdapter = new MyAdapter(context, R.layout.music_list_item, songList);
                         wearableRecyclerView.setAdapter(songAdapter);
 
                         wearableRecyclerView.setLayoutManager(new CurvedChildLayoutManager(context));
@@ -221,7 +226,7 @@ public class MainActivity extends WearableActivity {
                     //mediaOperation.setShufflePosition(0);
 
                     if (songAdapter == null) {
-                        songAdapter = new MyAdapter(context, R.layout.music_list_item, myList);
+                        songAdapter = new MyAdapter(context, R.layout.music_list_item, songList);
                         wearableRecyclerView.setAdapter(songAdapter);
 
                         wearableRecyclerView.setLayoutManager(new CurvedChildLayoutManager(context));
@@ -257,7 +262,30 @@ public class MainActivity extends WearableActivity {
                     }*/
 
 
-                } /*else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.ADD_SONG_LIST_CHANGE)) {
+                } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.RECEIVE_UPLOAD_COMPLETE)) {
+                    Log.d(TAG, "receive RECEIVE_UPLOAD_COMPLETE !");
+
+                    Log.d(TAG, "sendReceiveComplete");
+                    if(mGoogleApiClient == null) {
+                        Log.e(TAG, "mGoogleApiClient = null");
+                    } else {
+                        if (mGoogleApiClient.isConnected()) {
+                            PutDataMapRequest putRequest = PutDataMapRequest.create("/WEAR_COMMAND");
+                            DataMap map = putRequest.getDataMap();
+                            //map.putInt("color", Color.RED);
+                            map.putString("cmd", "UploadComplete");
+                            map.putLong("count", receive_count);
+                            receive_count++;
+                            Wearable.DataApi.putDataItem(mGoogleApiClient, putRequest.asPutDataRequest());
+                        } else {
+                            Log.e(TAG, "mGoogleApiClient is disconnected");
+                        }
+
+
+                    }
+                }
+
+                /*else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.ADD_SONG_LIST_CHANGE)) {
                     if (songArrayAdapter != null) {
                         songArrayAdapter.notifyDataSetChanged();
                     }
@@ -305,6 +333,7 @@ public class MainActivity extends WearableActivity {
         if (!isRegister) {
             filter = new IntentFilter();
             filter.addAction(Constants.ACTION.ADD_SONG_LIST_COMPLETE);
+            filter.addAction(Constants.ACTION.RECEIVE_UPLOAD_COMPLETE);
             //filter.addAction(Constants.ACTION.GET_PLAY_COMPLETE);
             //filter.addAction(Constants.ACTION.GET_SONGLIST_FROM_RECORD_FILE_COMPLETE);
             //filter.addAction(Constants.ACTION.SAVE_SONGLIST_TO_FILE_COMPLETE);
@@ -320,38 +349,11 @@ public class MainActivity extends WearableActivity {
     }
 
     private void init() {
-        Song song0 = new Song();
-        song0.setName("test0");
-        songList.add(song0);
-        Song song1 = new Song();
-        song1.setName("test1");
-        songList.add(song1);
-        Song song2 = new Song();
-        song2.setName("test2");
-        songList.add(song2);
-        Song song3 = new Song();
-        song3.setName("test3");
-        songList.add(song3);
-        Song song4 = new Song();
-        song4.setName("test4");
-        songList.add(song4);
-        Song song5 = new Song();
-        song5.setName("test5");
-        songList.add(song5);
-        Song song6 = new Song();
-        song6.setName("test6");
-        songList.add(song6);
-        Song song7 = new Song();
-        song7.setName("test7");
-        songList.add(song7);
-        Song song8 = new Song();
-        song8.setName("test8");
-        songList.add(song8);
 
         if (songList.size() == 0 ) {
             loadSongs();
         } else {
-            songAdapter = new MyAdapter(context, R.layout.music_list_item, myList);
+            songAdapter = new MyAdapter(context, R.layout.music_list_item, songList);
             wearableRecyclerView.setAdapter(songAdapter);
 
             wearableRecyclerView.setLayoutManager(new CurvedChildLayoutManager(this));
