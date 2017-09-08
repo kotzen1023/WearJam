@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +56,34 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public void onClick(View v) {
             // here you use position
             int position = getAdapterPosition();
+
+            /*
+            android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+             */
+
+            //songname.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            //songname.setFocusable(true);
+            //songname.setFocusableInTouchMode(true);
+
+            for (int i=0; i<items.size(); i++) {
+                if (i == position) {
+                    items.get(i).setSelected(true);
+                    items.get(i).getTextView().setTextColor(Color.GREEN);
+                } else {
+                    items.get(i).setSelected(false);
+                    if (items.get(i).getTextView() != null) {
+                        items.get(i).getTextView().setTextColor(Color.WHITE);
+                    }
+                }
+            }
+
+            Intent bcIntent = new Intent(Constants.ACTION.GET_UPDATE_VIEW_ACTION);
+            context.sendBroadcast(bcIntent);
+
             Log.e(TAG, "onClick "+position);
             Intent intent = new Intent(context, PlayActivity.class);
             intent.putExtra("TITLE", items.get(position).getName());
@@ -98,15 +127,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_audiotrack_white_48dp);
             holder.songicon.setImageBitmap(bitmap);
             holder.songname.setText(songItem.getName());
+            songItem.setTextView(holder.songname);
+
 
             if (songItem.isSelected()) {
-                //Log.e(TAG, ""+position+" is selected.");
+                Log.e(TAG, ""+position+" is selected.");
                 //view.setSelected(true);
-                holder.layoutItem.setBackgroundColor(Color.rgb(0x4d, 0x90, 0xfe));
+                holder.songname.setTextColor(Color.GREEN);
+                //holder.layoutItem.setBackgroundColor(Color.rgb(0x4d, 0x90, 0xfe));
             } else {
-                //Log.e(TAG, ""+position+" clear.");
+                Log.e(TAG, ""+position+" clear.");
+                holder.songname.setTextColor(Color.WHITE);
                 //view.setSelected(false);
-                holder.layoutItem.setBackgroundColor(Color.TRANSPARENT);
+                //holder.layoutItem.setBackgroundColor(Color.TRANSPARENT);
             }
         }
     }

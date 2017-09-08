@@ -31,6 +31,7 @@
         </activity>
         <activity android:name=".PlayActivity" />
         <activity android:name=".FileChooseActivity" />
+        <activity android:name=".DialogActivity" />
 
         <service android:name=".Service.DataLayerListenerService">
             <intent-filter>

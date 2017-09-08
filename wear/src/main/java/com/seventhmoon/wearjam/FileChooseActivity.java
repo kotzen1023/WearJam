@@ -10,11 +10,13 @@ import android.support.wearable.view.CircledImageView;
 import android.support.wearable.view.CurvedChildLayoutManager;
 import android.support.wearable.view.WearableRecyclerView;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.seventhmoon.wearjam.Data.Constants;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import static com.seventhmoon.wearjam.Data.FileOperation.remove_file;
 import static com.seventhmoon.wearjam.MainActivity.searchList;
 
 
@@ -44,8 +47,14 @@ public class FileChooseActivity extends WearableActivity {
     //public ListView listView;
     public static WearableRecyclerView wearableRecyclerView;
     private static FileChooseAdapter fileChooseAdapter;
+    private static FrameLayout framelayoutDelete;
     public static CircledImageView confirm;
     public static File currentDir;
+
+    public static ArrayList<String> deleteList = new ArrayList<>();
+    int REQUEST_CODE = 0;
+
+    public static ArrayList<FileChooseItem> current_dirs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +63,9 @@ public class FileChooseActivity extends WearableActivity {
         setAmbientEnabled();
 
         context = getBaseContext();
+
+        framelayoutDelete = findViewById(R.id.frameLayoutDelete);
+        CircledImageView btnFileChooseListDelete = findViewById(R.id.btnFileChooseListDelete);
 
         wearableRecyclerView = findViewById(R.id.fileChooseListView);
         confirm = findViewById(R.id.btnFileChooseListConfirm);
@@ -99,6 +111,36 @@ public class FileChooseActivity extends WearableActivity {
 
                 //searchFiles();
                 finish();
+            }
+        });
+
+        btnFileChooseListDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                searchList.clear();
+
+                for (int i = 0; i < fileChooseAdapter.getItemCount(); i++) {
+                    if (fileChooseAdapter.mSparseBooleanArray.get(i)) {
+                        Log.e(TAG, ""+i+" is checked");
+                        FileChooseItem fileChooseItem = fileChooseAdapter.getItem(i);
+
+                        if (fileChooseItem != null) {
+
+                            Log.e(TAG, "select : " + fileChooseItem.getPath());
+                            searchList.add(fileChooseItem.getPath());
+                        }
+                    }
+
+                }
+
+                deleteList.clear();
+                deleteList = null;
+                deleteList = new ArrayList<>(searchList);
+
+                Intent newIntent = new Intent(FileChooseActivity.this, DialogActivity.class);
+                newIntent.putExtra("DELETE", "Delete these files?");
+                startActivityForResult(newIntent, REQUEST_CODE);
             }
         });
     }
@@ -162,9 +204,64 @@ public class FileChooseActivity extends WearableActivity {
         }*/
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        Log.e(TAG, "requestCode = "+resultCode);
+        switch(resultCode){
+            case RESULT_OK:
+                Log.e(TAG, "OK");
+
+                for (int i=0; i<deleteList.size(); i++) {
+                    remove_file(deleteList.get(i));
+                    //remove dir
+
+
+                    Log.e(TAG, "deleteList.get(i) = "+deleteList.get(i));
+
+                    for(int j=0; j<current_dirs.size(); j++) {
+                        Log.e(TAG, "current_dirs.get(i).getPath() = "+current_dirs.get(j).getPath());
+                        if (current_dirs.get(j).getPath().equals(deleteList.get(i))) {
+                            Log.e(TAG, "remove "+current_dirs.get(j).getPath());
+                            current_dirs.remove(j);
+                        }
+                    }
+
+
+
+                }
+
+                fileChooseAdapter.notifyDataSetChanged();
+
+                //reset
+                fileChooseAdapter.mSparseBooleanArray.clear();
+                fileChooseAdapter.getItemCount();
+
+                for (int i=0; i <fileChooseAdapter.getItemCount(); i++) {
+                    fileChooseAdapter.mSparseBooleanArray.put(i, false);
+                }
+
+                break;
+            case RESULT_CANCELED:
+                Log.e(TAG, "CANCELED");
+                break;
+            //case EDIT:
+            //    Toast.makeText(this, data.getExtras().getString("B"), 0).show();
+        }
+    }
+
     public static void fill(File f)
     {
         final File[]dirs = f.listFiles();
+
+        Log.e(TAG, ".. dir = "+f.getName());
+        if (f.getName().equals("WearJam")) {
+            framelayoutDelete.setVisibility(View.VISIBLE);
+        } else {
+            framelayoutDelete.setVisibility(View.GONE);
+        }
 
         /*ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -216,8 +313,16 @@ public class FileChooseActivity extends WearableActivity {
                 !f.getAbsolutePath().equals(Environment.getExternalStorageDirectory().getPath())) {
             //CheckBox checkBox = new CheckBox(this);
             dir.add(0, new FileChooseItem("..", "Parent Directory", "", f.getParent(), "directory_up"));
+
+
         }
-        fileChooseAdapter = new FileChooseAdapter(context,R.layout.file_choose_in_row,dir);
+
+        //current_dirs.clear();
+        //current_dirs = null;
+        //current_dirs = new ArrayList<>(dir);
+        current_dirs = dir;
+
+        fileChooseAdapter = new FileChooseAdapter(context,R.layout.file_choose_in_row,current_dirs);
         wearableRecyclerView.setAdapter(fileChooseAdapter);
 
         //wearableRecyclerView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);

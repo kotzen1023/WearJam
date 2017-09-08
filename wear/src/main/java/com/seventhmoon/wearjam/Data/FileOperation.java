@@ -96,6 +96,104 @@ public class FileOperation {
         return ret;
     }
 
+    public static boolean clear_record(String fileName) {
+        boolean ret = true;
+
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            //path = Environment.getExternalStorageDirectory();
+            RootDirectory = Environment.getExternalStorageDirectory();
+        }
+
+        //check folder
+        File folder = new File(RootDirectory.getAbsolutePath() + "/.wearJam");
+
+        if (folder.exists()) {
+            File matchRecord = new File(folder+"/"+fileName);
+
+
+            if (!matchRecord.exists()) {
+                try {
+                    ret = matchRecord.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (!ret)
+                    Log.e(TAG, "create "+matchRecord.getName()+" failed!");
+            }
+
+            //if exist, write empty string
+            try {
+                FileWriter fw = new FileWriter(matchRecord.getAbsolutePath());
+                fw.write("");
+                fw.flush();
+                fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                ret = false;
+            }
+
+
+
+        } else {
+            Log.e(TAG, "inside_folder not exits!");
+            ret = false;
+        }
+
+
+
+        return ret;
+    }
+
+    public static boolean append_record(String message, String fileName) {
+        Log.i(TAG, "append_record --- start ---");
+        boolean ret = true;
+
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            //path = Environment.getExternalStorageDirectory();
+            RootDirectory = Environment.getExternalStorageDirectory();
+        }
+        //check folder
+        File folder = new File(RootDirectory.getAbsolutePath() + "/.wearJam");
+
+        if(!folder.exists()) {
+            Log.i(TAG, "folder not exist");
+            ret = folder.mkdirs();
+            if (!ret)
+                Log.e(TAG, "append_message: failed to mkdir ");
+        }
+
+        //File file_txt = new File(folder+"/"+date_file_name);
+        File file_txt = new File(folder+"/"+fileName);
+        //if file is not exist, create!
+        if(!file_txt.exists()) {
+            Log.i(TAG, "file not exist");
+
+            try {
+                ret = file_txt.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!ret)
+                Log.e(TAG, "append_record: failed to create file "+file_txt.getAbsolutePath());
+
+        }
+
+        try {
+            FileWriter fw = new FileWriter(file_txt.getAbsolutePath(), true);
+            fw.write(message);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            ret = false;
+        }
+
+
+        Log.i(TAG, "append_record --- end (success) ---");
+
+        return ret;
+    }
+
     public static String read_record(String fileName) {
 
 
@@ -207,6 +305,24 @@ public class FileOperation {
             catch ( IOException e ) {
                 e.printStackTrace();
             }
+        }
+
+        return ret;
+    }
+
+    public static boolean remove_file(String filePath) {
+        boolean ret = false;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            //path = Environment.getExternalStorageDirectory();
+            RootDirectory = Environment.getExternalStorageDirectory();
+        }
+
+        File file = new File(filePath);
+
+        if (file.exists()) {
+            ret = file.delete();
+        } else {
+            Log.d(TAG, "file "+file.getAbsolutePath()+ " is not exist");
         }
 
         return ret;

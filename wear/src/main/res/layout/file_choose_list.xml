@@ -15,13 +15,42 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.wearable.view.WearableRecyclerView
-            android:id="@+id/fileChooseListView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            android:clickable="true"
-            android:layout_weight="1"/>
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="84dp"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:padding="1dp"
+                android:id="@+id/frameLayoutDelete"
+                android:visibility="gone">
+
+                <android.support.wearable.view.CircledImageView
+                    android:id="@+id/btnFileChooseListDelete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_clear_black_48dp"
+                    app:circle_color="#AFAFAF"
+                    app:circle_radius="20dp"
+                    app:circle_radius_pressed="20dp" />
+            </FrameLayout>
+
+            <android.support.wearable.view.WearableRecyclerView
+                android:id="@+id/fileChooseListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:clickable="true"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+
 
         <FrameLayout
             android:layout_width="match_parent"

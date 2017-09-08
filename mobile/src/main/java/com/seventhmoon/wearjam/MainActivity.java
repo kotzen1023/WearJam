@@ -39,6 +39,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.seventhmoon.wearjam.Data.Constants;
 import com.seventhmoon.wearjam.Data.DottedSeekBar;
@@ -474,6 +476,25 @@ public class MainActivity extends AppCompatActivity {
                         Intent uploadIntent = new Intent(MainActivity.this, UploadToWatchService.class);
                         uploadIntent.setAction(Constants.ACTION.UPLOAD_SONGS_TO_WATCH_ACTION);
                         startService(uploadIntent);
+                    } else {
+                        Log.d(TAG, "sendTransferComplete");
+                        if(mGoogleApiClient == null) {
+                            Log.e(TAG, "mGoogleApiClient = null");
+                        } else {
+                            if (mGoogleApiClient.isConnected()) {
+                                PutDataMapRequest putRequest = PutDataMapRequest.create("/MOBILE_COMMAND");
+                                DataMap map = putRequest.getDataMap();
+                                //map.putInt("color", Color.RED);
+                                map.putString("cmd", "TransferComplete");
+                                map.putLong("count", count_for_upload);
+                                count_for_upload++;
+                                Wearable.DataApi.putDataItem(mGoogleApiClient, putRequest.asPutDataRequest());
+                            } else {
+                                Log.e(TAG, "mGoogleApiClient is disconnected");
+                            }
+
+
+                        }
                     }
                 }
             }

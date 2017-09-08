@@ -16,12 +16,14 @@
         android:id="@+id/songName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:maxLines="1"
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:gravity="center_vertical"
         android:layout_weight="1"
-        android:marqueeRepeatLimit="-1"
+
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+
         >
     </TextView>
 </LinearLayout>

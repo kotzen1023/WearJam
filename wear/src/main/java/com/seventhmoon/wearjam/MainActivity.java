@@ -33,6 +33,7 @@ import com.seventhmoon.wearjam.Data.MyAdapter;
 import com.seventhmoon.wearjam.Data.Song;
 import com.seventhmoon.wearjam.Data.SongArrayAdapter;
 import com.seventhmoon.wearjam.Service.GetSongListFromRecordService;
+import com.seventhmoon.wearjam.Service.SaveListToFileService;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -133,6 +134,12 @@ public class MainActivity extends WearableActivity {
 
                         if (loadDialog != null)
                             loadDialog.dismiss();
+
+                        //save list
+                        Intent saveintent = new Intent(context, SaveListToFileService.class);
+                        saveintent.setAction(Constants.ACTION.SAVE_SONGLIST_ACTION);
+                        saveintent.putExtra("FILENAME", "favorite");
+                        context.startService(saveintent);
                         //set shuffle list
                         /*mediaOperation.shuffleReset();
 
@@ -218,8 +225,17 @@ public class MainActivity extends WearableActivity {
 
 
                     for (int i=0; i<addSongList.size(); i++) {
-                        songList.add(addSongList.get(i));
-                        Log.d(TAG, "add "+addSongList.get(i).getName()+" to songList");
+                        boolean found = false;
+                        for (int j=0; j<songList.size(); j++) {
+                            if (songList.get(j).getPath().equals(addSongList.get(i).getPath())) {
+                                found = true;
+                            }
+                        }
+
+                        if (!found) {
+                            songList.add(addSongList.get(i));
+                            Log.d(TAG, "add "+addSongList.get(i).getName()+" to songList");
+                        }
                     }
 
                     //mediaOperation.shuffleReset();
@@ -236,6 +252,10 @@ public class MainActivity extends WearableActivity {
                         songAdapter.notifyDataSetChanged();
                     }
 
+                    Intent saveintent = new Intent(context, SaveListToFileService.class);
+                    saveintent.setAction(Constants.ACTION.SAVE_SONGLIST_ACTION);
+                    saveintent.putExtra("FILENAME", "favorite");
+                    context.startService(saveintent);
 
                     /*
                     Intent saveintent = new Intent(context, SaveListToFileService.class);
@@ -283,6 +303,12 @@ public class MainActivity extends WearableActivity {
 
 
                     }
+                } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.GET_UPDATE_VIEW_ACTION)) {
+                    Log.d(TAG, "receive GET_UPDATE_VIEW_ACTION !");
+
+                    //if (wearableRecyclerView != null) {
+                        wearableRecyclerView.postInvalidate();
+                    //}
                 }
 
                 /*else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.ADD_SONG_LIST_CHANGE)) {
@@ -335,7 +361,8 @@ public class MainActivity extends WearableActivity {
             filter.addAction(Constants.ACTION.ADD_SONG_LIST_COMPLETE);
             filter.addAction(Constants.ACTION.RECEIVE_UPLOAD_COMPLETE);
             //filter.addAction(Constants.ACTION.GET_PLAY_COMPLETE);
-            //filter.addAction(Constants.ACTION.GET_SONGLIST_FROM_RECORD_FILE_COMPLETE);
+            filter.addAction(Constants.ACTION.GET_SONGLIST_FROM_RECORD_FILE_COMPLETE);
+            filter.addAction(Constants.ACTION.GET_UPDATE_VIEW_ACTION);
             //filter.addAction(Constants.ACTION.SAVE_SONGLIST_TO_FILE_COMPLETE);
             //filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PLAYED);
             //filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PAUSED);
@@ -414,6 +441,7 @@ public class MainActivity extends WearableActivity {
         Log.d(TAG, "onPause");
 
 
+
         super.onPause();
         //mGoogleApiClient.disconnect();
     }
@@ -422,6 +450,7 @@ public class MainActivity extends WearableActivity {
     protected void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
+
         if (mGoogleApiClient != null && !mGoogleApiClient.isConnected())
             mGoogleApiClient.connect();
     }

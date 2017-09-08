@@ -45,6 +45,10 @@ public class DataLayerListenerService extends WearableListenerService {
                 String command = map.getString("cmd");
                 Long count = map.getLong("count");
                 Log.e(TAG, "command = "+command+" count = "+count);
+
+                if (command.equals("TransferComplete")) {
+                    Log.e(TAG, "receive TransferComplete!");
+                }
             }
             else if("/MOBILE_MUSIC".equals(path)) {
                 Log.d(TAG, "/MOBILE_MUSIC");

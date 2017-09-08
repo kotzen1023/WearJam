@@ -1,6 +1,7 @@
 package com.seventhmoon.wearjam.Data;
 
 
+import android.widget.TextView;
 
 public class Song {
     private String name;
@@ -12,6 +13,7 @@ public class Song {
     private int mark_a;
     private int mark_b;
     private boolean selected;
+    private TextView textView;
 
 
     public String getName() {
@@ -81,5 +83,13 @@ public class Song {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public TextView getTextView() {
+        return textView;
+    }
+
+    public void setTextView(TextView textView) {
+        this.textView = textView;
     }
 }

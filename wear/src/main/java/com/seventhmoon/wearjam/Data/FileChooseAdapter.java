@@ -278,10 +278,11 @@ public class FileChooseAdapter extends RecyclerView.Adapter<FileChooseAdapter.Vi
                     count--;
             }
             else {
-                fileChooseItem.getCheckBox().setChecked(false);
-                fileChooseItem.getCheckBox().setVisibility(View.INVISIBLE);
-                mSparseBooleanArray.put((Integer) buttonView.getTag(), false);
-                count--;
+                Log.d(TAG, "item : "+fileChooseItem.getName());
+                //fileChooseItem.getCheckBox().setChecked(false);
+                //fileChooseItem.getCheckBox().setVisibility(View.INVISIBLE);
+                //mSparseBooleanArray.put((Integer) buttonView.getTag(), false);
+                //count--;
             }
             //}
             /*int count = 0;
