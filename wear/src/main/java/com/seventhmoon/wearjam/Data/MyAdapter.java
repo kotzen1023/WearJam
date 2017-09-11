@@ -20,6 +20,9 @@ import com.seventhmoon.wearjam.R;
 
 import java.util.ArrayList;
 
+import static com.seventhmoon.wearjam.MainActivity.current_song_duration;
+import static com.seventhmoon.wearjam.MainActivity.wearableRecyclerView;
+
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private static final String TAG = MyAdapter.class.getName();
@@ -43,7 +46,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         ImageView songicon;
         TextView songname;
         //public TextView mTextView;
-        public ViewHolder(View v) {
+        private ViewHolder(View v) {
             super(v);
             //mTextView = v;
             this.layoutItem = v.findViewById(R.id.layoutItem);
@@ -56,6 +59,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public void onClick(View v) {
             // here you use position
             int position = getAdapterPosition();
+
 
             /*
             android:ellipsize="marquee"
@@ -71,22 +75,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
             for (int i=0; i<items.size(); i++) {
                 if (i == position) {
+                    Log.e(TAG, "onClick "+position);
                     items.get(i).setSelected(true);
-                    items.get(i).getTextView().setTextColor(Color.GREEN);
+
                 } else {
                     items.get(i).setSelected(false);
-                    if (items.get(i).getTextView() != null) {
-                        items.get(i).getTextView().setTextColor(Color.WHITE);
-                    }
+
                 }
             }
+
+            //wearableRecyclerView.postInvalidate();
 
             Intent bcIntent = new Intent(Constants.ACTION.GET_UPDATE_VIEW_ACTION);
             context.sendBroadcast(bcIntent);
 
-            Log.e(TAG, "onClick "+position);
+
             Intent intent = new Intent(context, PlayActivity.class);
             intent.putExtra("TITLE", items.get(position).getName());
+            intent.putExtra("PATH", items.get(position).getPath());
+            current_song_duration = (int)items.get(position).getDuration_u();
             context.startActivity(intent);
         }
 
@@ -133,11 +140,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             if (songItem.isSelected()) {
                 Log.e(TAG, ""+position+" is selected.");
                 //view.setSelected(true);
-                holder.songname.setTextColor(Color.GREEN);
+                items.get(position).getTextView().setTextColor(Color.rgb(0x0e, 0xb6, 0x95));
+                //items.get(position).getTextView().setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                //items.get(position).getTextView().setMarqueeRepeatLimit(-1);
+                //items.get(position).getTextView().setFocusable(true);
+                //items.get(position).getTextView().setFocusableInTouchMode(true);
+                /*
+                items.get(position).getTextView().setMaxLines(0);
+                items.get(position).getTextView().setSingleLine(true);*/
+
                 //holder.layoutItem.setBackgroundColor(Color.rgb(0x4d, 0x90, 0xfe));
             } else {
                 Log.e(TAG, ""+position+" clear.");
-                holder.songname.setTextColor(Color.WHITE);
+                items.get(position).getTextView().setTextColor(Color.WHITE);
+                //items.get(position).getTextView().setEllipsize(TextUtils.TruncateAt.END);
+                //items.get(position).getTextView().setMarqueeRepeatLimit(0);
+                //items.get(position).getTextView().setFocusable(false);
+                //items.get(position).getTextView().setFocusableInTouchMode(false);
+                /*items.get(position).getTextView().setMaxLines(1);
+                items.get(position).getTextView().setSingleLine(false);*/
                 //view.setSelected(false);
                 //holder.layoutItem.setBackgroundColor(Color.TRANSPARENT);
             }

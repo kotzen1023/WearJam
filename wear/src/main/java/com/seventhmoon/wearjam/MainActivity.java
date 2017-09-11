@@ -5,7 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -29,6 +31,7 @@ import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.seventhmoon.wearjam.Data.Constants;
+import com.seventhmoon.wearjam.Data.MediaOperation;
 import com.seventhmoon.wearjam.Data.MyAdapter;
 import com.seventhmoon.wearjam.Data.Song;
 import com.seventhmoon.wearjam.Data.SongArrayAdapter;
@@ -61,9 +64,13 @@ public class MainActivity extends WearableActivity {
     //private TextView mClockView;
     private Context context;
 
+    static SharedPreferences pref ;
+    static SharedPreferences.Editor editor;
+    private static final String FILE_NAME = "Preference";
+
     //ArrayList<Song> myList = new ArrayList<>();
 
-    WearableRecyclerView wearableRecyclerView;
+    public static WearableRecyclerView wearableRecyclerView;
     MyAdapter songAdapter;
 
 
@@ -77,8 +84,13 @@ public class MainActivity extends WearableActivity {
 
     private static BroadcastReceiver mReceiver = null;
     private static boolean isRegister = false;
-    public static ProgressDialog loadDialog = null;
+    //public static ProgressDialog loadDialog = null;
     private static long receive_count = 0;
+    public static MediaOperation mediaOperation;
+    public static boolean isPlayPress = false;
+    public static int current_position = 0;
+    public static int current_volume = 50;
+    public static int current_song_duration = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +99,9 @@ public class MainActivity extends WearableActivity {
         setAmbientEnabled();
 
         context = getBaseContext();
+
+        pref = getSharedPreferences(FILE_NAME, MODE_PRIVATE);
+        current_volume = pref.getInt("PLAY_VOLUME", 50);
 
         wearableRecyclerView = findViewById(R.id.listView);
         CircledImageView btnImage = findViewById(R.id.btn_add);
@@ -132,8 +147,8 @@ public class MainActivity extends WearableActivity {
                         wearableRecyclerView.setLayoutManager(new CurvedChildLayoutManager(context));
                         wearableRecyclerView.setCenterEdgeItems(true);
 
-                        if (loadDialog != null)
-                            loadDialog.dismiss();
+                        //if (loadDialog != null)
+                        //    loadDialog.dismiss();
 
                         //save list
                         Intent saveintent = new Intent(context, SaveListToFileService.class);
@@ -205,8 +220,8 @@ public class MainActivity extends WearableActivity {
                         }*/
 
                     } else {
-                        if (loadDialog != null)
-                            loadDialog.dismiss();
+                        //if (loadDialog != null)
+                        //    loadDialog.dismiss();
 
                         /*if (item_remove != null) {
                             item_remove.setVisible(false);
@@ -306,9 +321,10 @@ public class MainActivity extends WearableActivity {
                 } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.GET_UPDATE_VIEW_ACTION)) {
                     Log.d(TAG, "receive GET_UPDATE_VIEW_ACTION !");
 
-                    //if (wearableRecyclerView != null) {
-                        wearableRecyclerView.postInvalidate();
-                    //}
+                    if (wearableRecyclerView != null) {
+                        songAdapter.notifyDataSetChanged();
+                        wearableRecyclerView.invalidate();
+                    }
                 }
 
                 /*else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.ADD_SONG_LIST_CHANGE)) {
@@ -377,6 +393,8 @@ public class MainActivity extends WearableActivity {
 
     private void init() {
 
+        Log.e(TAG, "init: songList.size() = "+songList.size());
+
         if (songList.size() == 0 ) {
             loadSongs();
         } else {
@@ -386,6 +404,9 @@ public class MainActivity extends WearableActivity {
             wearableRecyclerView.setLayoutManager(new CurvedChildLayoutManager(this));
             wearableRecyclerView.setCenterEdgeItems(true);
         }
+
+        mediaOperation = new MediaOperation(context);
+        mediaOperation.setCurrent_volume(current_volume);
 
         /*songAdapter = new MyAdapter(context, R.layout.music_list_item, myList);
         wearableRecyclerView.setAdapter(songAdapter);
@@ -398,13 +419,13 @@ public class MainActivity extends WearableActivity {
 
         if (check_record_exist("favorite")) {
             Log.d(TAG, "load file success!");
-            loadDialog = new ProgressDialog(context);
-            loadDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            loadDialog.setTitle("Loading...");
-            loadDialog.setIndeterminate(false);
-            loadDialog.setCancelable(false);
+            //loadDialog = new ProgressDialog(context);
+            //loadDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            //loadDialog.setTitle("Loading...");
+            //loadDialog.setIndeterminate(false);
+            //loadDialog.setCancelable(false);
 
-            loadDialog.show();
+            //loadDialog.show();
 
             Intent intent = new Intent(context, GetSongListFromRecordService.class);
             intent.setAction(Constants.ACTION.GET_SONGLIST_ACTION);
@@ -450,6 +471,8 @@ public class MainActivity extends WearableActivity {
     protected void onResume() {
         Log.d(TAG, "onResume");
         super.onResume();
+
+
 
         if (mGoogleApiClient != null && !mGoogleApiClient.isConnected())
             mGoogleApiClient.connect();
