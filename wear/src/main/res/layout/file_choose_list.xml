@@ -38,7 +38,8 @@
                     android:src="@drawable/ic_clear_black_48dp"
                     app:circle_color="#AFAFAF"
                     app:circle_radius="20dp"
-                    app:circle_radius_pressed="20dp" />
+                    app:circle_radius_pressed="20dp"
+                    />
             </FrameLayout>
 
             <android.support.wearable.view.WearableRecyclerView

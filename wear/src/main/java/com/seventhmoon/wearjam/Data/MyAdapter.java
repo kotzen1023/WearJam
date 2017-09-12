@@ -93,7 +93,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             Intent intent = new Intent(context, PlayActivity.class);
             intent.putExtra("TITLE", items.get(position).getName());
             intent.putExtra("PATH", items.get(position).getPath());
-            current_song_duration = (int)items.get(position).getDuration_u();
+            Log.e(TAG, "duration_u = "+items.get(position).getDuration_u());
+            current_song_duration = (int)(items.get(position).getDuration_u()/1000);
+            //current_song_duration = (int)(songList.get(song_selected).getDuration_u()/1000);
             context.startActivity(intent);
         }
 

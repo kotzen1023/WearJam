@@ -2,6 +2,8 @@ package com.seventhmoon.wearjam.Service;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
+import android.os.StatFs;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -48,6 +50,12 @@ public class DataLayerListenerService extends WearableListenerService {
 
                 if (command.equals("TransferComplete")) {
                     Log.e(TAG, "receive TransferComplete!");
+
+                    StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+                    long bytesAvailable = stat.getBlockSizeLong() *stat.getBlockCountLong();
+                    long megAvailable = bytesAvailable / 1048576;
+                    System.out.println("Megs :"+megAvailable);
+                    Log.e(TAG, ""+megAvailable+"MB available");
                 }
             }
             else if("/MOBILE_MUSIC".equals(path)) {

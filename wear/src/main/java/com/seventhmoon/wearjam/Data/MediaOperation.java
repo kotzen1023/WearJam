@@ -18,10 +18,12 @@ import static com.seventhmoon.wearjam.Data.Constants.STATE;
 import static com.seventhmoon.wearjam.MainActivity.isPlayPress;
 import static com.seventhmoon.wearjam.MainActivity.songList;
 
-import static com.seventhmoon.wearjam.PlayActivity.dottedSeekBar;
+import static com.seventhmoon.wearjam.PlayActivity.setSongDuration;
+import static com.seventhmoon.wearjam.PlayActivity.timeSeekBar;
 import static com.seventhmoon.wearjam.PlayActivity.progress_mark_a;
 import static com.seventhmoon.wearjam.PlayActivity.progress_mark_b;
 import static com.seventhmoon.wearjam.PlayActivity.songPath;
+import static com.seventhmoon.wearjam.PlayActivity.setSongDuration2;
 
 public class MediaOperation {
     private static final String TAG = MediaOperation.class.getName();
@@ -779,14 +781,18 @@ public class MediaOperation {
             //setActionBarTitle(mediaPlayer.getCurrentPosition());
 
             if (values[0] >= 1000) {
-                dottedSeekBar.setProgress(1000);
-                //if (mediaPlayer != null && current_state == STATE.Started)
-                //    setSongDuration(mediaPlayer.getDuration());
+                timeSeekBar.setProgress(1000);
+                if (mediaPlayer != null && current_state == STATE.Started) {
+                    setSongDuration(mediaPlayer.getDuration());
+                    setSongDuration2(mediaPlayer.getDuration());
+                }
             } else {
 
-                dottedSeekBar.setProgress(values[0]);
-                //if (mediaPlayer != null && current_state == STATE.Started)
-                //    setSongDuration(mediaPlayer.getCurrentPosition());
+                timeSeekBar.setProgress(values[0]);
+                if (mediaPlayer != null && current_state == STATE.Started) {
+                    setSongDuration(mediaPlayer.getCurrentPosition());
+                    setSongDuration2(mediaPlayer.getCurrentPosition());
+                }
             }
 
             // 背景工作處理"中"更新的事
@@ -820,7 +826,7 @@ public class MediaOperation {
                 Log.d(TAG, "Pause was pressed while playing");
             } else {
                 Log.e(TAG, "pause is not been pressed.");
-                dottedSeekBar.setProgress(0);
+                timeSeekBar.setProgress(0);
             }
 
             //taskDone = true;

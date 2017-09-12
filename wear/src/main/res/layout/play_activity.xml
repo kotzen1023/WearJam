@@ -34,8 +34,17 @@
                 android:layout_height="match_parent"
 
                 android:layout_weight="1"
-                android:max="1000"
-                android:progress="500"/>
+                android:max="1000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="100%"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/textViewSpeed"
+                android:visibility="gone"
+                />
 
 
             <LinearLayout
@@ -67,11 +76,32 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
+            <com.seventhmoon.wearjam.Data.DottedSeekBar
+                android:id="@+id/seekBarVolume"
+                style="@android:style/Widget.Holo.Light.SeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:max="100"
+                android:progress="50"
+                android:visibility="gone"/>
+
+            <com.seventhmoon.wearjam.Data.DottedSeekBar
+                android:id="@+id/seekBarSpeed"
+                style="@android:style/Widget.Holo.Light.SeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:max="200"
+                android:progress="100"
+                android:visibility="gone"/>
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                >
+                android:id="@+id/frameLayoutPlay"
+                android:visibility="visible">
 
                 <android.support.wearable.view.CircledImageView
                     android:id="@+id/btn_a"
@@ -104,11 +134,14 @@
                     app:circle_radius_pressed="20dp" />
             </FrameLayout>
 
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:id="@+id/linearLayoutSpeed">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -116,11 +149,11 @@
                     android:layout_weight="1">
 
                     <android.support.wearable.view.CircledImageView
-                        android:id="@+id/btn_down"
+                        android:id="@+id/btn_speed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|bottom"
-                        android:src="@drawable/ic_arrow_drop_down_black_48dp"
+                        android:src="@drawable/ic_access_time_black_48dp"
                         app:circle_color="#AFAFAF"
                         app:circle_radius="25dp"
                         app:circle_radius_pressed="20dp"
@@ -132,7 +165,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1">
 
-                    <android.support.wearable.view.CircledImageView
+                    <!--android.support.wearable.view.CircledImageView
                         android:id="@+id/btn_up"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -140,11 +173,37 @@
                         android:src="@drawable/ic_arrow_drop_up_black_48dp"
                         app:circle_color="#AFAFAF"
                         app:circle_radius="25dp"
-                        app:circle_radius_pressed="20dp" />
+                        app:circle_radius_pressed="20dp" /-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/textViewTimeElapsed"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="00:00"
+                        android:gravity="center"/>
                 </FrameLayout>
 
 
             </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:id="@+id/frameLayoutDown">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="00:00.000"
+                    android:gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textViewTime"
+                    />
+
+
+            </FrameLayout>
         </LinearLayout>
 
 

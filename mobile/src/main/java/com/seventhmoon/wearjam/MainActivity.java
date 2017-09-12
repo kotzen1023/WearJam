@@ -485,9 +485,9 @@ public class MainActivity extends AppCompatActivity {
                                 PutDataMapRequest putRequest = PutDataMapRequest.create("/MOBILE_COMMAND");
                                 DataMap map = putRequest.getDataMap();
                                 //map.putInt("color", Color.RED);
+                                count_for_upload++;
                                 map.putString("cmd", "TransferComplete");
                                 map.putLong("count", count_for_upload);
-                                count_for_upload++;
                                 Wearable.DataApi.putDataItem(mGoogleApiClient, putRequest.asPutDataRequest());
                             } else {
                                 Log.e(TAG, "mGoogleApiClient is disconnected");
