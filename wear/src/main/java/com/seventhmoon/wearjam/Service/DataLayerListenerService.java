@@ -51,11 +51,16 @@ public class DataLayerListenerService extends WearableListenerService {
                 if (command.equals("TransferComplete")) {
                     Log.e(TAG, "receive TransferComplete!");
 
-                    StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+                    /*StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
                     long bytesAvailable = stat.getBlockSizeLong() *stat.getBlockCountLong();
                     long megAvailable = bytesAvailable / 1048576;
                     System.out.println("Megs :"+megAvailable);
-                    Log.e(TAG, ""+megAvailable+"MB available");
+                    Log.e(TAG, ""+megAvailable+"MB available");*/
+                } else if (command.equals("GetAvailableSpace")) {
+                    Log.e(TAG, "receive GetAvailableSpace!");
+
+                    Intent intent = new Intent(Constants.ACTION.GET_AVAILABLE_SPACE);
+                    sendBroadcast(intent);
                 }
             }
             else if("/MOBILE_MUSIC".equals(path)) {

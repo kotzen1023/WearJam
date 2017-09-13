@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -37,7 +39,9 @@ import com.seventhmoon.wearjam.Data.Song;
 import com.seventhmoon.wearjam.Data.SongArrayAdapter;
 import com.seventhmoon.wearjam.Service.GetSongListFromRecordService;
 import com.seventhmoon.wearjam.Service.SaveListToFileService;
+import com.seventhmoon.wearjam.Service.SearchFileService;
 
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -49,6 +53,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.seventhmoon.wearjam.Data.FileOperation.check_record_exist;
+import static com.seventhmoon.wearjam.Data.FileOperation.getDefaultSerachPath;
 import static com.seventhmoon.wearjam.Data.FileOperation.init_wearjam_folder;
 
 public class MainActivity extends WearableActivity {
@@ -300,6 +305,8 @@ public class MainActivity extends WearableActivity {
                 } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.RECEIVE_UPLOAD_COMPLETE)) {
                     Log.d(TAG, "receive RECEIVE_UPLOAD_COMPLETE !");
 
+
+
                     Log.d(TAG, "sendReceiveComplete");
                     if(mGoogleApiClient == null) {
                         Log.e(TAG, "mGoogleApiClient = null");
@@ -318,12 +325,43 @@ public class MainActivity extends WearableActivity {
 
 
                     }
+
+                    //add search
+                    searchList.add(getDefaultSerachPath());
+
+                    //start search
+                    Intent saveintent = new Intent(MainActivity.this, SearchFileService.class);
+                    saveintent.setAction(Constants.ACTION.GET_SEARCHLIST_ACTION);
+                    startService(saveintent);
+
                 } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.GET_UPDATE_VIEW_ACTION)) {
                     Log.d(TAG, "receive GET_UPDATE_VIEW_ACTION !");
 
                     if (wearableRecyclerView != null) {
                         songAdapter.notifyDataSetChanged();
                         wearableRecyclerView.invalidate();
+                    }
+                } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.GET_AVAILABLE_SPACE)) {
+                    Log.d(TAG, "receive GET_AVAILABLE_SPACE !");
+
+                    //StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+                    //long bytesAvailable = stat.getBlockSizeLong() * stat.getBlockCountLong();
+                    long megAvailable = sd_card_free() / 1048576;
+                    System.out.println("Megs :"+megAvailable);
+                    Log.e(TAG, ""+megAvailable+"MB available");
+
+                    //send back to mobile
+                    if (mGoogleApiClient.isConnected()) {
+                        PutDataMapRequest putRequest = PutDataMapRequest.create("/WEAR_COMMAND");
+                        DataMap map = putRequest.getDataMap();
+                        //map.putInt("color", Color.RED);
+                        map.putString("cmd", "CurrentAvailableSpace");
+                        map.putLong("space_available", megAvailable);
+                        map.putLong("count", receive_count);
+                        receive_count++;
+                        Wearable.DataApi.putDataItem(mGoogleApiClient, putRequest.asPutDataRequest());
+                    } else {
+                        Log.e(TAG, "mGoogleApiClient is disconnected");
                     }
                 }
 
@@ -379,6 +417,7 @@ public class MainActivity extends WearableActivity {
             //filter.addAction(Constants.ACTION.GET_PLAY_COMPLETE);
             filter.addAction(Constants.ACTION.GET_SONGLIST_FROM_RECORD_FILE_COMPLETE);
             filter.addAction(Constants.ACTION.GET_UPDATE_VIEW_ACTION);
+            filter.addAction(Constants.ACTION.GET_AVAILABLE_SPACE);
             //filter.addAction(Constants.ACTION.SAVE_SONGLIST_TO_FILE_COMPLETE);
             //filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PLAYED);
             //filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PAUSED);
@@ -393,9 +432,16 @@ public class MainActivity extends WearableActivity {
 
     private void init() {
 
+
+
+        if (songList == null) {
+            songList = new ArrayList<>();
+        }
+
         Log.e(TAG, "init: songList.size() = "+songList.size());
 
         if (songList.size() == 0 ) {
+
             loadSongs();
         } else {
             songAdapter = new MyAdapter(context, R.layout.music_list_item, songList);
@@ -499,6 +545,9 @@ public class MainActivity extends WearableActivity {
         }
 
         songAdapter = null;
+
+        songList.clear();
+        songList = null;
 
         super.onDestroy();
 
@@ -673,5 +722,56 @@ public class MainActivity extends WearableActivity {
             }
         }
 
+    }
+
+    // PHONE STORAGE
+    public static long phone_storage_free(){
+        File path = Environment.getDataDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long free_memory = stat.getAvailableBlocksLong() * stat.getBlockSizeLong(); //return value is in bytes
+
+        return free_memory;
+    }
+
+    public static long phone_storage_used(){
+        File path = Environment.getDataDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long free_memory = (stat.getBlockCountLong() - stat.getAvailableBlocksLong()) * stat.getBlockSizeLong(); //return value is in bytes
+
+        return free_memory;
+    }
+
+    public static long phone_storage_total(){
+        File path = Environment.getDataDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long free_memory = stat.getBlockCountLong() * stat.getBlockSizeLong(); //return value is in bytes
+
+        return free_memory;
+    }
+
+    // SD CARD
+    public static long sd_card_free(){
+
+        File path = Environment.getExternalStorageDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long free_memory = stat.getAvailableBlocksLong() * stat.getBlockSizeLong(); //return value is in bytes
+
+        return free_memory;
+    }
+    public static long sd_card_used(){
+
+        File path = Environment.getExternalStorageDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long free_memory = (stat.getBlockCountLong() - stat.getAvailableBlocksLong()) * stat.getBlockSizeLong(); //return value is in bytes
+
+        return free_memory;
+    }
+    public static long sd_card_total(){
+
+        File path = Environment.getExternalStorageDirectory();
+        StatFs stat = new StatFs(path.getPath());
+        long free_memory = stat.getBlockCountLong() * stat.getBlockSizeLong(); //return value is in bytes
+
+        return free_memory;
     }
 }

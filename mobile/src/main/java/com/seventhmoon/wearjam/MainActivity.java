@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.seventhmoon.wearjam.Data.FileOperation.check_file_exist;
 import static com.seventhmoon.wearjam.Data.FileOperation.check_record_exist;
 import static com.seventhmoon.wearjam.Data.FileOperation.init_folder_and_files;
 
@@ -156,6 +157,11 @@ public class MainActivity extends AppCompatActivity {
 
     public static GoogleApiClient mGoogleApiClient;
     public static Long count_for_upload = 0L;
+
+    private static Long totalUploadSize = 0L;
+    private static int totalUploadFileNum = 0;
+
+    private static boolean isSync = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -478,6 +484,9 @@ public class MainActivity extends AppCompatActivity {
                         startService(uploadIntent);
                     } else {
                         Log.d(TAG, "sendTransferComplete");
+
+                        isSync = false;
+
                         if(mGoogleApiClient == null) {
                             Log.e(TAG, "mGoogleApiClient = null");
                         } else {
@@ -496,6 +505,36 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     }
+                } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.UPLOAD_SONGS_DIALOG_ACTION)) {
+                    Log.d(TAG, "receive UPLOAD_SONGS_DIALOG_ACTION !");
+                    String spaceString = intent.getStringExtra("watch_space");
+                    Log.e(TAG, "get free space = "+spaceString);
+
+
+                    AlertDialog.Builder confirmdialog = new AlertDialog.Builder(MainActivity.this);
+                    confirmdialog.setTitle("Sync to cell phone");
+                    confirmdialog.setMessage("Will send "+totalUploadFileNum+" file(s) "+totalUploadSize/1048576+" MBytes, your watch available space "+Long.valueOf(spaceString)+" MBytes.");
+                    confirmdialog.setIcon(R.mipmap.ic_launcher);
+                    confirmdialog.setCancelable(false);
+                    confirmdialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            //set sync true
+                            isSync = true;
+
+                            Intent uploadIntent = new Intent(MainActivity.this, UploadToWatchService.class);
+                            uploadIntent.setAction(Constants.ACTION.UPLOAD_SONGS_TO_WATCH_ACTION);
+                            startService(uploadIntent);
+                        }
+                    });
+                    confirmdialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+                        }
+                    });
+
+                    confirmdialog.show();
                 }
             }
         };
@@ -510,6 +549,7 @@ public class MainActivity extends AppCompatActivity {
             filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PLAYED);
             filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PAUSED);
             filter.addAction(Constants.ACTION.GET_UPLOAD_SONG_COMPLETE);
+            filter.addAction(Constants.ACTION.UPLOAD_SONGS_DIALOG_ACTION);
             context.registerReceiver(mReceiver, filter);
             isRegister = true;
             Log.d(TAG, "registerReceiver mReceiver");
@@ -2038,27 +2078,48 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_upload_to_watch:
                 Log.e(TAG, "action_upload_to_watch");
 
-                uploadList.clear();
+                if (!isSync) {
 
-                for (int i = 0; i < myListview.getCount(); i++) {
-                    if (songArrayAdapter.mSparseBooleanArray.get(i)) {
-                        Song song = songArrayAdapter.getItem(i);
+                    uploadList.clear();
+                    totalUploadFileNum = 0;
+                    totalUploadSize = 0L;
+                    for (int i = 0; i < myListview.getCount(); i++) {
+                        if (songArrayAdapter.mSparseBooleanArray.get(i)) {
+                            Song song = songArrayAdapter.getItem(i);
+                            File file = new File(song.getPath());
+                            if (song != null && check_file_exist(song.getPath())) {
 
-                        if (song != null) {
-
-                            Log.e(TAG, "select : " + song.getPath());
-                            uploadList.add(song.getPath());
+                                Log.e(TAG, "select : " + song.getPath());
+                                uploadList.add(song.getPath());
+                                totalUploadSize += file.length();
+                                totalUploadFileNum++;
+                            }
                         }
+
                     }
 
+                    //send get watch available space
+                    if (mGoogleApiClient.isConnected()) {
+                        PutDataMapRequest putRequest = PutDataMapRequest.create("/MOBILE_COMMAND");
+                        DataMap map = putRequest.getDataMap();
+                        //map.putInt("color", Color.RED);
+                        count_for_upload++;
+                        map.putString("cmd", "GetAvailableSpace");
+                        map.putLong("count", count_for_upload);
+                        Wearable.DataApi.putDataItem(mGoogleApiClient, putRequest.asPutDataRequest());
+                    } else {
+                        Log.e(TAG, "mGoogleApiClient is disconnected");
+                    }
+
+
+                    //Intent uploadIntent = new Intent(MainActivity.this, UploadToWatchService.class);
+                    //uploadIntent.setAction(Constants.ACTION.UPLOAD_SONGS_TO_WATCH_ACTION);
+                    //startService(uploadIntent);
+
+                    break;
+                } else {
+                    toast("Sync now. Please wait.");
                 }
-
-
-                Intent uploadIntent = new Intent(MainActivity.this, UploadToWatchService.class);
-                uploadIntent.setAction(Constants.ACTION.UPLOAD_SONGS_TO_WATCH_ACTION);
-                startService(uploadIntent);
-
-                break;
 
         }
 

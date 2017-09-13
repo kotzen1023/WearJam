@@ -46,6 +46,13 @@ public class DataLayerListenerService extends WearableListenerService {
                 if (command.equals("UploadComplete")) {
                     Intent intent = new Intent(Constants.ACTION.GET_UPLOAD_SONG_COMPLETE);
                     sendBroadcast(intent);
+                } else if (command.equals("CurrentAvailableSpace")) {
+                    Long space = map.getLong("space_available");
+                    Log.e(TAG, "Your watch available space is "+space+ " MBytes");
+                    Intent intent = new Intent(Constants.ACTION.UPLOAD_SONGS_DIALOG_ACTION);
+                    intent.putExtra("watch_space", String.valueOf(space));
+                    sendBroadcast(intent);
+
                 }
             }
             else if("/WEAR_MUSIC".equals(path)) {

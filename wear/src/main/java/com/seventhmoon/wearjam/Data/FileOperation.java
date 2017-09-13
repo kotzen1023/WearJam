@@ -327,4 +327,48 @@ public class FileOperation {
 
         return ret;
     }
+
+    public static String getDefaultSerachPath() {
+
+        boolean exist;
+
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            //path = Environment.getExternalStorageDirectory();
+            RootDirectory = Environment.getExternalStorageDirectory();
+        }
+
+        File folder_wear = new File(RootDirectory.getAbsolutePath() + "/Music/WearJam/");
+
+        //check dir if exist
+        if(!folder_wear.exists()) {
+            Log.i(TAG, "folder not exist");
+            exist = folder_wear.mkdirs();
+            if (!exist)
+                Log.e(TAG, "folder_wear: failed to mkdir ");
+            try {
+                exist = folder_wear.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!exist)
+                Log.e(TAG, "folder_wear: failed to create hidden file");
+        }
+
+        while(true) {
+            if(folder_wear.exists())
+                break;
+        }
+
+        Log.e(TAG, "getDefaultSerachPath = "+folder_wear.getAbsolutePath());
+
+
+
+
+
+
+
+
+
+        return folder_wear.getAbsolutePath();
+    }
 }
