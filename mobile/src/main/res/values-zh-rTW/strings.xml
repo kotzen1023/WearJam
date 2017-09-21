@@ -23,5 +23,8 @@
     <string name="song_list_empty">播放清單為空</string>
     <string name="list_empty">播放清單為空. 試著按下\"新增\"按鈕來增加歌曲到你的播放清單!</string>
     <string name="play_mode_video">影片</string>
-    <string name="upload_to_watch">上傳至手錶</string>
+    <string name="upload_to_watch">同步至手錶</string>
+    <string name="menu_help">求助</string>
+    <string name="title_synchronization">同步到手機</string>
+    <string name="msg_sync">長按一首歌, 會顯示核選方塊. 選擇您要同步到手錶上的歌曲, 再按\"同步到手機\"</string>
 </resources>

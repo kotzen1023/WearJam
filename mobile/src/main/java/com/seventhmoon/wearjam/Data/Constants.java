@@ -22,6 +22,8 @@ public class Constants {
         String UPLOAD_SONGS_TO_WATCH_ACTION = "com.seventhmoon.UploadSongsToWatchAction";
         String GET_UPLOAD_SONG_COMPLETE = "com.seventhmoon.GetUpLoadSongComplete";
         String UPLOAD_SONGS_DIALOG_ACTION = "com.seventhmoon.UploadSongsDialogAction";
+
+        String GET_WATCH_CLEAR_COMPLETE = "com.seventhmoon.GetWatchClearComplete";
     }
 
     public enum STATE {

@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     public static SongArrayAdapter songArrayAdapter;
 
 
-    MenuItem item_search, item_play_all, item_shuffle, item_single_repeat, item_ab_loop;
+    MenuItem item_search, item_add, item_play_all, item_shuffle, item_single_repeat, item_ab_loop;
 
     public static MenuItem item_upload_watch;
     public static ActionBar actionBar;
@@ -504,6 +504,19 @@ public class MainActivity extends AppCompatActivity {
 
 
                         }
+
+                        AlertDialog.Builder confirmdialog = new AlertDialog.Builder(MainActivity.this);
+                        confirmdialog.setTitle("Synchronization Complete");
+                        //confirmdialog.setMessage("Will send "+totalUploadFileNum+" file(s) "+((totalUploadSize > 1048576) ? totalUploadSize/1048576+" MBytes" : totalUploadSize/1024+" KBytes")+" to your watch. And your watch available space are "+Long.valueOf(spaceString)+" MBytes.");
+                        confirmdialog.setIcon(R.mipmap.ic_launcher);
+                        confirmdialog.setCancelable(false);
+                        confirmdialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        confirmdialog.show();
                     }
                 } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.UPLOAD_SONGS_DIALOG_ACTION)) {
                     Log.d(TAG, "receive UPLOAD_SONGS_DIALOG_ACTION !");
@@ -513,18 +526,28 @@ public class MainActivity extends AppCompatActivity {
 
                     AlertDialog.Builder confirmdialog = new AlertDialog.Builder(MainActivity.this);
                     confirmdialog.setTitle("Sync to cell phone");
-                    confirmdialog.setMessage("Will send "+totalUploadFileNum+" file(s) "+totalUploadSize/1048576+" MBytes, your watch available space "+Long.valueOf(spaceString)+" MBytes.");
+                    if (totalUploadFileNum > 0) {
+                        confirmdialog.setMessage("Will send " + totalUploadFileNum + " file(s) " + ((totalUploadSize > 1048576) ? totalUploadSize / 1048576 + " MBytes" : totalUploadSize / 1024 + " KBytes") + " to your watch. And your watch available space are " + Long.valueOf(spaceString) + " MBytes.");
+                    } else {
+                        confirmdialog.setMessage("You didn't select any song. Synchronization will clear all songs in your watch list.");
+                    }
                     confirmdialog.setIcon(R.mipmap.ic_launcher);
                     confirmdialog.setCancelable(false);
                     confirmdialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
-                            //set sync true
-                            isSync = true;
-
-                            Intent uploadIntent = new Intent(MainActivity.this, UploadToWatchService.class);
-                            uploadIntent.setAction(Constants.ACTION.UPLOAD_SONGS_TO_WATCH_ACTION);
-                            startService(uploadIntent);
+                            //send clear command before sync
+                            if (mGoogleApiClient.isConnected()) {
+                                PutDataMapRequest putRequest = PutDataMapRequest.create("/MOBILE_COMMAND");
+                                DataMap map = putRequest.getDataMap();
+                                //map.putInt("color", Color.RED);
+                                count_for_upload++;
+                                map.putString("cmd", "ClearCommand");
+                                map.putLong("count", count_for_upload);
+                                Wearable.DataApi.putDataItem(mGoogleApiClient, putRequest.asPutDataRequest());
+                            } else {
+                                Log.e(TAG, "mGoogleApiClient is disconnected");
+                            }
                         }
                     });
                     confirmdialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -535,6 +558,32 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     confirmdialog.show();
+                } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.GET_WATCH_CLEAR_COMPLETE)) {
+                    Log.d(TAG, "receive GET_WATCH_CLEAR_COMPLETE !");
+
+                    //set sync true
+                    if (totalUploadFileNum > 0) {
+                        isSync = true;
+
+                        Intent uploadIntent = new Intent(MainActivity.this, UploadToWatchService.class);
+                        uploadIntent.setAction(Constants.ACTION.UPLOAD_SONGS_TO_WATCH_ACTION);
+                        startService(uploadIntent);
+                    } else {
+                        isSync = false;
+
+                        AlertDialog.Builder confirmdialog = new AlertDialog.Builder(MainActivity.this);
+                        confirmdialog.setTitle("Synchronization Complete");
+                        //confirmdialog.setMessage("Will send "+totalUploadFileNum+" file(s) "+((totalUploadSize > 1048576) ? totalUploadSize/1048576+" MBytes" : totalUploadSize/1024+" KBytes")+" to your watch. And your watch available space are "+Long.valueOf(spaceString)+" MBytes.");
+                        confirmdialog.setIcon(R.mipmap.ic_launcher);
+                        confirmdialog.setCancelable(false);
+                        confirmdialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+
+                        confirmdialog.show();
+                    }
                 }
             }
         };
@@ -550,6 +599,7 @@ public class MainActivity extends AppCompatActivity {
             filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PAUSED);
             filter.addAction(Constants.ACTION.GET_UPLOAD_SONG_COMPLETE);
             filter.addAction(Constants.ACTION.UPLOAD_SONGS_DIALOG_ACTION);
+            filter.addAction(Constants.ACTION.GET_WATCH_CLEAR_COMPLETE);
             context.registerReceiver(mReceiver, filter);
             isRegister = true;
             Log.d(TAG, "registerReceiver mReceiver");
@@ -1633,6 +1683,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                item_add.setVisible(false);
+
                 return false;
             }
         });
@@ -1737,6 +1789,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            item_add.setVisible(true);
             //confirm.setVisibility(View.GONE);
         } else {
             finish();
@@ -1755,6 +1808,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         item_search = menu.findItem(R.id.action_search);
+        item_add = menu.findItem(R.id.action_add);
         item_remove = menu.findItem(R.id.action_remove);
         item_clear = menu.findItem(R.id.action_clear);
 
@@ -1767,7 +1821,7 @@ public class MainActivity extends AppCompatActivity {
         //item_clear = menu.findItem(R.id.action_clear);
 
         item_search.setVisible(false);
-        item_upload_watch.setVisible(false);
+        item_upload_watch.setVisible(true);
 
         try {
             //SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search_keeper));
@@ -1792,6 +1846,21 @@ public class MainActivity extends AppCompatActivity {
 
                 intent = new Intent(MainActivity.this, FileChooseActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.action_help:
+                AlertDialog.Builder helpdialog = new AlertDialog.Builder(this);
+                helpdialog.setIcon(R.mipmap.ic_launcher);
+                helpdialog.setTitle(getResources().getString(R.string.title_synchronization));
+                helpdialog.setMessage(getResources().getString(R.string.msg_sync));
+                helpdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                    }
+                });
+
+                helpdialog.show();
+
                 break;
             case R.id.action_play_all:
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_all_inclusive_white_48dp);

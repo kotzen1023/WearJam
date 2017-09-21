@@ -186,11 +186,11 @@ public class SongArrayAdapter extends ArrayAdapter<Song> {
 
             //Log.e(TAG, "Count = "+count);
 
-            if (count > 0) {
+            /*if (count > 0) {
                 item_upload_watch.setVisible(true);
             } else  {
                 item_upload_watch.setVisible(false);
-            }
+            }*/
         }
     };
 

@@ -61,6 +61,11 @@ public class DataLayerListenerService extends WearableListenerService {
 
                     Intent intent = new Intent(Constants.ACTION.GET_AVAILABLE_SPACE);
                     sendBroadcast(intent);
+                } else if (command.equals("ClearCommand")) {
+                    Log.e(TAG, "receive ClearCommand!");
+
+                    Intent intent = new Intent(Constants.ACTION.SEND_CLEAR_ACTION);
+                    sendBroadcast(intent);
                 }
             }
             else if("/MOBILE_MUSIC".equals(path)) {

@@ -23,5 +23,8 @@
     <string name="song_list_empty">Song list is empty</string>
     <string name="list_empty">Play list is empty. Try to use \"add\" button to add songs to your list!</string>
     <string name="play_mode_video">Video</string>
-    <string name="upload_to_watch">Copy To Watch</string>
+    <string name="upload_to_watch">Sync To Watch</string>
+    <string name="menu_help">Help</string>
+    <string name="title_synchronization">Synchronize with watch</string>
+    <string name="msg_sync">Long click a song, and the checkbox will show. Select your songs and press \'Sync to watch\'</string>
 </resources>

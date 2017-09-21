@@ -53,6 +53,9 @@ public class DataLayerListenerService extends WearableListenerService {
                     intent.putExtra("watch_space", String.valueOf(space));
                     sendBroadcast(intent);
 
+                } else if (command.equals("ClearComplete")) {
+                    Intent intent = new Intent(Constants.ACTION.GET_WATCH_CLEAR_COMPLETE);
+                    sendBroadcast(intent);
                 }
             }
             else if("/WEAR_MUSIC".equals(path)) {

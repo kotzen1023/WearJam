@@ -61,42 +61,36 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             int position = getAdapterPosition();
 
 
-            /*
-            android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
-        android:singleLine="true"
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-             */
+            if (items.size() > 0) {
 
-            //songname.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-            //songname.setFocusable(true);
-            //songname.setFocusableInTouchMode(true);
+                if (position >= 0) {
 
-            for (int i=0; i<items.size(); i++) {
-                if (i == position) {
-                    Log.e(TAG, "onClick "+position);
-                    items.get(i).setSelected(true);
+                    for (int i = 0; i < items.size(); i++) {
+                        if (i == position) {
+                            Log.e(TAG, "onClick " + position);
+                            items.get(i).setSelected(true);
 
-                } else {
-                    items.get(i).setSelected(false);
+                        } else {
+                            items.get(i).setSelected(false);
 
+                        }
+                    }
+
+                    //wearableRecyclerView.postInvalidate();
+
+                    Intent bcIntent = new Intent(Constants.ACTION.GET_UPDATE_VIEW_ACTION);
+                    context.sendBroadcast(bcIntent);
+
+
+                    Intent intent = new Intent(context, PlayActivity.class);
+                    intent.putExtra("TITLE", items.get(position).getName());
+                    intent.putExtra("PATH", items.get(position).getPath());
+                    Log.e(TAG, "duration_u = " + items.get(position).getDuration_u());
+                    current_song_duration = (int) (items.get(position).getDuration_u() / 1000);
+                    //current_song_duration = (int)(songList.get(song_selected).getDuration_u()/1000);
+                    context.startActivity(intent);
                 }
             }
-
-            //wearableRecyclerView.postInvalidate();
-
-            Intent bcIntent = new Intent(Constants.ACTION.GET_UPDATE_VIEW_ACTION);
-            context.sendBroadcast(bcIntent);
-
-
-            Intent intent = new Intent(context, PlayActivity.class);
-            intent.putExtra("TITLE", items.get(position).getName());
-            intent.putExtra("PATH", items.get(position).getPath());
-            Log.e(TAG, "duration_u = "+items.get(position).getDuration_u());
-            current_song_duration = (int)(items.get(position).getDuration_u()/1000);
-            //current_song_duration = (int)(songList.get(song_selected).getDuration_u()/1000);
-            context.startActivity(intent);
         }
 
 

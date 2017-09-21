@@ -55,6 +55,7 @@ import java.util.Map;
 import static com.seventhmoon.wearjam.Data.FileOperation.check_record_exist;
 import static com.seventhmoon.wearjam.Data.FileOperation.getDefaultSerachPath;
 import static com.seventhmoon.wearjam.Data.FileOperation.init_wearjam_folder;
+import static com.seventhmoon.wearjam.Data.FileOperation.remove_file;
 
 public class MainActivity extends WearableActivity {
     private static final String TAG = MainActivity.class.getName();
@@ -363,6 +364,38 @@ public class MainActivity extends WearableActivity {
                     } else {
                         Log.e(TAG, "mGoogleApiClient is disconnected");
                     }
+                } else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.SEND_CLEAR_ACTION)) {
+                    Log.d(TAG, "receive SEND_CLEAR_ACTION !");
+
+                    if (songList.size() > 0) {
+
+                        for (int i = 0; i < songList.size(); i++) {
+                            remove_file(songList.get(i).getPath());
+                        }
+                        songList.clear();
+                        songAdapter.notifyDataSetChanged();
+
+
+                    }
+
+                    Log.d(TAG, "sendClearComplete");
+                    if(mGoogleApiClient == null) {
+                        Log.e(TAG, "mGoogleApiClient = null");
+                    } else {
+                        if (mGoogleApiClient.isConnected()) {
+                            PutDataMapRequest putRequest = PutDataMapRequest.create("/WEAR_COMMAND");
+                            DataMap map = putRequest.getDataMap();
+                            //map.putInt("color", Color.RED);
+                            map.putString("cmd", "ClearComplete");
+                            map.putLong("count", receive_count);
+                            receive_count++;
+                            Wearable.DataApi.putDataItem(mGoogleApiClient, putRequest.asPutDataRequest());
+                        } else {
+                            Log.e(TAG, "mGoogleApiClient is disconnected");
+                        }
+
+
+                    }
                 }
 
                 /*else if (intent.getAction().equalsIgnoreCase(Constants.ACTION.ADD_SONG_LIST_CHANGE)) {
@@ -418,6 +451,7 @@ public class MainActivity extends WearableActivity {
             filter.addAction(Constants.ACTION.GET_SONGLIST_FROM_RECORD_FILE_COMPLETE);
             filter.addAction(Constants.ACTION.GET_UPDATE_VIEW_ACTION);
             filter.addAction(Constants.ACTION.GET_AVAILABLE_SPACE);
+            filter.addAction(Constants.ACTION.SEND_CLEAR_ACTION);
             //filter.addAction(Constants.ACTION.SAVE_SONGLIST_TO_FILE_COMPLETE);
             //filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PLAYED);
             //filter.addAction(Constants.ACTION.MEDIAPLAYER_STATE_PAUSED);

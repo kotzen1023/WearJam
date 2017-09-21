@@ -23,6 +23,7 @@ public class Constants {
         String MEDIAPLAYER_STATE_PAUSED = "com.seventhmoon.WearJam.MediaPlayerStatePaused";
 
         String GET_AVAILABLE_SPACE = "com.seventhmoon.WearJam.GetAvailableSpace";
+        String SEND_CLEAR_ACTION = "com.seventhmoon.WearJam.SendClearAction";
     }
 
     public enum STATE {
