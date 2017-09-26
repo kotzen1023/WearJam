@@ -27,4 +27,12 @@
     <string name="menu_help">Help</string>
     <string name="title_synchronization">Synchronize with watch</string>
     <string name="msg_sync">Long click a song, and the checkbox will show. Select your songs and press \'Sync to watch\'</string>
+    <string name="msg_song_empty">Try to press to \'add\' your favorite songs into playlist.</string>
+    <string name="help_title_add">Add songs</string>
+    <string name="help_title_choose_file">1. Long click a folder or a file will show checkbox.\n2. When you choose a folder, all files in this folder will be search and check.\n3. Only audio format and can be played in this app will be add into playlist.</string>
+    <string name="sync_to_watch_msg1">It will send %s file(s)</string>
+    <string name="sync_to_watch_msg2">estimated about %s to your watch.</string>
+    <string name="sync_to_watch_msg3">And your watch available space are %s.</string>
+    <string name="sync_to_watch_msg_empty">You didn\'t select any song. Synchronization will clear all songs in your watch list. Are you sure?</string>
+    <string name="sync_to_watch_complete">Synchronization complete</string>
 </resources>

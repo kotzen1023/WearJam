@@ -1,6 +1,8 @@
 package com.seventhmoon.wearjam;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -189,6 +191,20 @@ public class FileChooseActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // action with ID action_refresh was selected
+
+            case R.id.action_help:
+                AlertDialog.Builder helpdialog = new AlertDialog.Builder(this);
+                helpdialog.setIcon(R.mipmap.ic_launcher);
+                helpdialog.setTitle(getResources().getString(R.string.help_title_add));
+                helpdialog.setMessage(getResources().getString(R.string.help_title_choose_file));
+                helpdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                    }
+                });
+                helpdialog.show();
+                break;
 
             case R.id.action_selectall:
                 if (!FileChooseLongClick) {

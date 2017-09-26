@@ -506,11 +506,11 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         AlertDialog.Builder confirmdialog = new AlertDialog.Builder(MainActivity.this);
-                        confirmdialog.setTitle("Synchronization Complete");
+                        confirmdialog.setTitle(getResources().getString(R.string.sync_to_watch_complete));
                         //confirmdialog.setMessage("Will send "+totalUploadFileNum+" file(s) "+((totalUploadSize > 1048576) ? totalUploadSize/1048576+" MBytes" : totalUploadSize/1024+" KBytes")+" to your watch. And your watch available space are "+Long.valueOf(spaceString)+" MBytes.");
                         confirmdialog.setIcon(R.mipmap.ic_launcher);
                         confirmdialog.setCancelable(false);
-                        confirmdialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        confirmdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                             }
@@ -525,15 +525,19 @@ public class MainActivity extends AppCompatActivity {
 
 
                     AlertDialog.Builder confirmdialog = new AlertDialog.Builder(MainActivity.this);
-                    confirmdialog.setTitle("Sync to cell phone");
+                    confirmdialog.setTitle(getResources().getString(R.string.upload_to_watch));
                     if (totalUploadFileNum > 0) {
                         confirmdialog.setMessage("Will send " + totalUploadFileNum + " file(s) " + ((totalUploadSize > 1048576) ? totalUploadSize / 1048576 + " MBytes" : totalUploadSize / 1024 + " KBytes") + " to your watch. And your watch available space are " + Long.valueOf(spaceString) + " MBytes.");
+                        //confirmdialog.setMessage(getResources().getString(R.));
+                        confirmdialog.setMessage(getResources().getString(R.string.sync_to_watch_msg1, String.valueOf(totalUploadFileNum))
+                                                +getResources().getString(R.string.sync_to_watch_msg2, ((totalUploadSize > 1048576) ? totalUploadSize / 1048576 + " MBytes" : totalUploadSize / 1024 + " KBytes"))+" "
+                                                +getResources().getString(R.string.sync_to_watch_msg3, spaceString + " MBytes."));
                     } else {
-                        confirmdialog.setMessage("You didn't select any song. Synchronization will clear all songs in your watch list.");
+                        confirmdialog.setMessage(getResources().getString(R.string.sync_to_watch_msg_empty));
                     }
                     confirmdialog.setIcon(R.mipmap.ic_launcher);
                     confirmdialog.setCancelable(false);
-                    confirmdialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    confirmdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                             //send clear command before sync
@@ -550,7 +554,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
-                    confirmdialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    confirmdialog.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
 
@@ -572,11 +576,11 @@ public class MainActivity extends AppCompatActivity {
                         isSync = false;
 
                         AlertDialog.Builder confirmdialog = new AlertDialog.Builder(MainActivity.this);
-                        confirmdialog.setTitle("Synchronization Complete");
+                        confirmdialog.setTitle(getResources().getString(R.string.sync_to_watch_complete));
                         //confirmdialog.setMessage("Will send "+totalUploadFileNum+" file(s) "+((totalUploadSize > 1048576) ? totalUploadSize/1048576+" MBytes" : totalUploadSize/1024+" KBytes")+" to your watch. And your watch available space are "+Long.valueOf(spaceString)+" MBytes.");
                         confirmdialog.setIcon(R.mipmap.ic_launcher);
                         confirmdialog.setCancelable(false);
-                        confirmdialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        confirmdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
 
                             }
@@ -1850,17 +1854,28 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_help:
                 AlertDialog.Builder helpdialog = new AlertDialog.Builder(this);
                 helpdialog.setIcon(R.mipmap.ic_launcher);
-                helpdialog.setTitle(getResources().getString(R.string.title_synchronization));
-                helpdialog.setMessage(getResources().getString(R.string.msg_sync));
-                helpdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                if (songList.size() > 0) {
+                    helpdialog.setTitle(getResources().getString(R.string.title_synchronization));
+                    helpdialog.setMessage(getResources().getString(R.string.msg_sync));
+                    helpdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
 
 
-                    }
-                });
+                        }
+                    });
 
+
+                } else {
+                    helpdialog.setTitle(getResources().getString(R.string.help_title_add));
+                    helpdialog.setMessage(getResources().getString(R.string.msg_song_empty));
+                    helpdialog.setPositiveButton(getResources().getString(R.string.confirm), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+
+                        }
+                    });
+                }
                 helpdialog.show();
-
                 break;
             case R.id.action_play_all:
                 actionBar.setHomeAsUpIndicator(R.drawable.ic_all_inclusive_white_48dp);

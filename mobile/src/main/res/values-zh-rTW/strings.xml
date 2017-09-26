@@ -21,10 +21,18 @@
     <string name="mark_b">標記B</string>
     <string name="must_be_less_than_song_duration">必須小於歌曲時間</string>
     <string name="song_list_empty">播放清單為空</string>
-    <string name="list_empty">播放清單為空. 試著按下\"新增\"按鈕來增加歌曲到你的播放清單!</string>
+    <string name="list_empty">播放清單為空. 試著按下 \"新增\" 按鈕來增加歌曲到你的播放清單!</string>
     <string name="play_mode_video">影片</string>
     <string name="upload_to_watch">同步至手錶</string>
     <string name="menu_help">求助</string>
     <string name="title_synchronization">同步到手機</string>
-    <string name="msg_sync">長按一首歌, 會顯示核選方塊. 選擇您要同步到手錶上的歌曲, 再按\"同步到手機\"</string>
+    <string name="msg_sync">長按一首歌, 會顯示核選方塊. 選擇您要同步到手錶上的歌曲, 再按 \"同步到手機\"</string>
+    <string name="msg_song_empty">試著按 \'新增\' 來將您喜愛的歌放到撥放清單裡</string>
+    <string name="help_title_add">新增歌曲</string>
+    <string name="help_title_choose_file">1. 長按一個資料夾或檔案可以顯示核選方塊.\n2. 如果選擇的是資料夾, 資料夾內所有檔案都會被檢視.\n3. 只有聲音格式的檔案, 而且可以用此App撥放的檔案才會被加入撥放清單.</string>
+    <string name="sync_to_watch_msg1">將傳送 %s 個檔案</string>
+    <string name="sync_to_watch_msg2">約 %s 到您的手錶.</string>
+    <string name="sync_to_watch_msg3">而你的手錶目前還有 %s 的空間可用.</string>
+    <string name="sync_to_watch_msg_empty">您沒有選擇任何歌曲. 同步的動作則會清除手錶播放清單內的歌曲, 確定繼續?</string>
+    <string name="sync_to_watch_complete">同步完成</string>
 </resources>
